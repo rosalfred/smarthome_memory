@@ -1,0 +1,39 @@
+plugins {
+    id "org.ros2.rcljava" version "0.2.0"
+}
+
+apply plugin: 'org.ros2.rcljava'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+group = 'org.rosbuilding.memory'
+
+repositories {
+     jcenter()
+}
+
+ament {generateEclipse=true}
+
+dependencies {
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'joda-time:joda-time:2.9.4'
+    compile 'org.influxdb:influxdb-java:2.3'
+
+    runtime fileTree(dir: 'libs', include: '*.jar')
+}
+
+task copyLib(type: Copy) {
+    if (project.hasProperty('ament.install_space')) {
+        from(configurations.testRuntime)
+            into([project.getProperty('ament.install_space'), 'lib', 'java'].join(File.separator))
+
+        from(configurations.runtime)
+            into([project.getProperty('ament.install_space'), 'lib', 'java'].join(File.separator))
+
+        from("lib")
+            into([project.getProperty('ament.install_space'), 'lib', 'java'].join(File.separator))
+    }
+}
+
+assemble.dependsOn copyLib
