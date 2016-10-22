@@ -48,8 +48,8 @@ public abstract class StateDataSubscriber<T extends Message> {
     public final boolean mustInsert(T message) {
         boolean result = false;
 
-        if (this.comparator != null
-                && (this.lastMessage == null || !this.comparator.isEquals(this.lastMessage, message))) {
+        if (this.comparator == null
+                || this.lastMessage == null || !this.comparator.isEquals(this.lastMessage, message)) {
             this.lastMessage = message;
             result = true;
         }

@@ -28,6 +28,9 @@ public class TemperatureSubscriber extends StateDataSubscriber<SensorTemperature
         result.put("ambiant.temperature", message.getTemperatureAmbiant().getTemperature());
         result.put("ambiant.variance", message.getTemperatureAmbiant().getVariance());
 
+        result.put("object.temperature", message.getTemperatureObject().getTemperature());
+        result.put("object.variance", message.getTemperatureObject().getVariance());
+
         return result;
     }
 

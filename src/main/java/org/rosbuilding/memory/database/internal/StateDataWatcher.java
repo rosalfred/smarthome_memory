@@ -11,8 +11,10 @@ import org.ros2.rcljava.node.topic.Subscription;
 import org.rosbuilding.memory.database.internal.subscribers.BotSubscriber;
 import org.rosbuilding.memory.database.internal.subscribers.MediaSubscriber;
 import org.rosbuilding.memory.database.internal.subscribers.StateDataSubscriber;
+import org.rosbuilding.memory.database.internal.subscribers.TemperatureSubscriber;
 
 import smarthome_comm_msgs.msg.Command;
+import smarthome_heater_msgs.msg.SensorTemperatureStateData;
 import smarthome_media_msgs.msg.StateData;
 
 public class StateDataWatcher {
@@ -36,6 +38,8 @@ public class StateDataWatcher {
             stateDataSubscriber = new BotSubscriber(topic);
         } else if (isMessageType(messageType, StateData.class)) {
             stateDataSubscriber = new MediaSubscriber(topic);
+        } else if (isMessageType(messageType, SensorTemperatureStateData.class)) {
+            stateDataSubscriber = new TemperatureSubscriber(topic);
         }
 
         if (stateDataSubscriber != null) {
