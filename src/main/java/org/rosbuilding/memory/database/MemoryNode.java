@@ -9,7 +9,6 @@
 package org.rosbuilding.memory.database;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import org.ros2.rcljava.RCLJava;
 import org.ros2.rcljava.node.Node;
@@ -31,7 +30,7 @@ public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
     private TopicWatcher topicWatcher;
 
     public MemoryNode() {
-        super("memory");
+
     }
 
     @Override
@@ -48,7 +47,7 @@ public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
     }
 
     @Override
-    protected MemoryConfig getConfig() {
+    protected MemoryConfig makeConfiguration() {
         return new MemoryConfig(this.getConnectedNode());
     }
 
