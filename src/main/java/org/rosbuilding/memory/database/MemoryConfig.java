@@ -23,14 +23,15 @@ public class MemoryConfig extends NodeDriverConnectedConfig {
     public MemoryConfig(Node connectedNode) {
         super(
                 connectedNode,
-                "/influx",
+                "/home",
+                "memory",
                 "fixed_frame",
                 1,
                 "00:00:00:00:00:00",
                 "localhost",
                 8086,
-                "root",
-                "root");
+                "admin",
+                "admin");
 
         this.name = "alfred";
     }

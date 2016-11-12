@@ -35,9 +35,10 @@ public class InfluxDb {
     public InfluxDb(MemoryNode node, MemoryConfig config) {
         this.node = node;
         this.config = config;
+        String cnxString = String.format("http://%s:%d", this.config.getHost(), this.config.getPort());
 
         this.influxDB = InfluxDBFactory.connect(
-                String.format("http://%s:%d", this.config.getHost(), this.config.getPort()),
+                cnxString,
                 this.config.getUser(),
                 this.config.getPassword());
         this.influxDB.createDatabase(this.config.getName());
@@ -60,7 +61,7 @@ public class InfluxDb {
         Point point = builder.build();
 
         try {
-            this.influxDB.write(this.config.getName(), "default", point);
+            this.influxDB.write(this.config.getName(), "autogen", point);
         } catch (Exception e) {
             this.node.getConnectedNode().getLog().debug(e.getMessage());
         }
