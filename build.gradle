@@ -1,5 +1,5 @@
 plugins {
-    id "org.ros2.rcljava" version "0.4.4"
+    id "org.ros2.rcljava" version "0.4.6"
 }
 
 apply plugin: 'org.ros2.rcljava'
@@ -21,4 +21,15 @@ dependencies {
     compile 'org.influxdb:influxdb-java:2.3'
 
     runtime fileTree(dir: 'libs', include: '*.jar')
+}
+
+ament {
+    generateEclipse = true
+
+    scripts {
+        main {
+            applicationName = project.name
+            mainClassName = 'org.rosbuilding.memory.database.MemoryNode'
+        }
+    }
 }
