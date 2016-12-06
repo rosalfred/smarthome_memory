@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Alfred package.
  *
  * (c) Mickael Gaillard <mick.gaillard@gmail.com>
@@ -18,6 +18,7 @@ import org.rosbuilding.common.NodeDriverConnectedConfig;
 */
 public class MemoryConfig extends NodeDriverConnectedConfig {
 
+    /** Name of TSDB database */
     private String name;
 
     public MemoryConfig(Node connectedNode) {
@@ -33,9 +34,13 @@ public class MemoryConfig extends NodeDriverConnectedConfig {
                 "admin",
                 "admin");
 
-        this.name = "alfred";
+        this.name = "smarthome_memory";
     }
 
+    /**
+     * Name of TSDB.
+     * @return String name
+     */
     public String getName() {
         return this.name;
     }

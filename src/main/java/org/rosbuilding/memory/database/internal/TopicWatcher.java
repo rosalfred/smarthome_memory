@@ -1,60 +1,110 @@
+/*
+ * This file is part of the Alfred package.
+ *
+ * (c) Mickael Gaillard <mick.gaillard@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 package org.rosbuilding.memory.database.internal;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
+import java.util.Map.Entry;
 
-public class TopicWatcher {
-    private static final String MEASUREMENT = "topic";
+import org.ros2.rcljava.node.Node;
 
-    private final InfluxDb influx;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    private List<String> topics;
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
 
-    public TopicWatcher(InfluxDb influx) {
-        this.topics = new ArrayList<>();
-        this.influx = influx;
+/**
+ * Topics watcher.<p>
+ * Detect new/destroy Topics.
+ */
+public class TopicWatcher implements Runnable {
+
+    private static final Logger logger = LoggerFactory.getLogger(TopicWatcher.class);
+
+    /** Main node. */
+    private final Node node;
+
+    /** Topics Manager. */
+    private final TopicManager topicManager;
+
+    /** List of Topics and types. */
+    private final Map<String, String> topicsTypes = new HashMap<String, String>();
+
+    // Thread component.
+    private volatile Thread blinker;
+    boolean threadSuspended;
+
+    /**
+     * Constuctor of TopicWatcher.
+     * @param node
+     * @param topicManager
+     */
+    public TopicWatcher(final Node node, final TopicManager topicManager) {
+        this.node = node;
+        this.topicManager = topicManager;
     }
 
-    public void checkTopics(HashMap<String,String> topicsTypes) {
-        List<String> addedTopics = new ArrayList<>(topicsTypes.keySet());
-        List<String> removedTopics = new ArrayList<>(this.topics);
+    /** Start the watcher */
+    public void start() {
+        logger.debug("Start watcher...");
+        this.blinker = new Thread(this);
+        this.blinker.start();
+    }
 
-        addedTopics.removeAll(this.topics);
-        removedTopics.removeAll(topicsTypes.keySet());
+    /** Stop the watcher */
+    public synchronized void stop() {
+        logger.debug("Stop watcher...");
+        this.blinker = null;
+        this.notify();
+    }
 
-        this.topics = new ArrayList<>(topicsTypes.keySet());
+    @Override
+    public void run() {
+        Thread thisThread = Thread.currentThread();
 
-        DateTime now = DateTime.now();
+        while (blinker == thisThread) {
+            try {
+                Thread.sleep(5000);
 
-        for (String topic : addedTopics) {
-            this.insert(now, this.getTags(topic), this.getFields(true));
+                synchronized(this) {
+                    while (threadSuspended && blinker==thisThread)
+                        wait();
+                }
+            } catch (InterruptedException e){
+                e.printStackTrace();
+            }
+
+            TopicWatcher.this.checkTopics();
+        }
+    }
+
+    private void checkTopics() {
+        logger.debug("Check Topics available...");
+//        List<String> nodes = this.node.getNodes();
+        HashMap<String, String> topicsTypes = this.node.getTopicNamesAndTypes();
+
+        MapDifference<String, String> diff = Maps.difference(this.topicsTypes, topicsTypes);
+        Map<String, String> removed = diff.entriesOnlyOnLeft();
+        Map<String, String> added   = diff.entriesOnlyOnRight();
+
+        // TODO Remove from detected node, not only from topic (because is subscribed)
+        // Remove removed topic.
+        for (Entry<String, String> topic : removed.entrySet()) {
+            this.topicsTypes.remove(topic.getKey());
+            this.topicManager.remove(topic.getKey());
         }
 
-        for (String topic : removedTopics) {
-            this.insert(now, this.getTags(topic), this.getFields(false));
+        // Add added topic.
+        for (Entry<String, String> topic : added.entrySet()) {
+            this.topicsTypes.put(topic.getKey(), topic.getValue());
+            this.topicManager.add(topic.getKey(), topic.getValue());
         }
-    }
-
-    private Map<String, String> getTags(String topic) {
-        Map<String, String> result = new HashMap<>();
-
-        result.put("topic", topic);
-
-        return result;
-    }
-
-    private Map<String, Object> getFields(boolean online) {
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("status", online);
-
-        return result;
-    }
-
-    private void insert(DateTime date, Map<String, String> tags, Map<String, Object> fields) {
-        //this.influx.write(date, MEASUREMENT, tags, fields);
     }
 }

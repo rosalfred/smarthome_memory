@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Alfred package.
  *
  * (c) Mickael Gaillard <mick.gaillard@gmail.com>
@@ -8,14 +8,14 @@
  */
 package org.rosbuilding.memory.database;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
 import org.ros2.rcljava.RCLJava;
 import org.ros2.rcljava.node.Node;
+
 import org.rosbuilding.common.BaseSimpleNode;
-import org.rosbuilding.memory.database.internal.InfluxDb;
-import org.rosbuilding.memory.database.internal.StateDataWatcher;
+import org.rosbuilding.memory.database.internal.TopicManager;
 import org.rosbuilding.memory.database.internal.TopicWatcher;
+import org.rosbuilding.memory.database.internal.tsdb.InfluxManager;
+import org.rosbuilding.memory.database.internal.tsdb.TimeSerieManager;
 
 /**
  * Memory ROS Node.
@@ -25,67 +25,38 @@ import org.rosbuilding.memory.database.internal.TopicWatcher;
  */
 public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
 
-    private InfluxDb influxDb;
-    private StateDataWatcher stateDataManager;
+    /** Time Serie DataBase */
+    private TimeSerieManager timeSerieManager;
+
+    /** Topic manager of subscription. */
+    private TopicManager topicManager;
+
+    /** Watch lifecycle Topics */
     private TopicWatcher topicWatcher;
-
-    public MemoryNode() {
-
-    }
 
     @Override
     public void onStart(Node connectedNode) {
         super.onStart(connectedNode);
 
-        this.initialize();
+        this.timeSerieManager = new InfluxManager(this, this.configuration);
+        this.topicManager = new TopicManager(this.getConnectedNode(), this.timeSerieManager);
+
+        // Watcher of Topics. Detecte if new or destroy topics.
+        this.topicWatcher = new TopicWatcher(this.getConnectedNode(), this.topicManager);
+        this.topicWatcher.start();
     }
 
     @Override
     public void onShutdown(Node node) {
-        this.stateDataManager.removeAllTopics();
+        this.topicWatcher.stop();
+        this.topicManager.clear();
+
         super.onShutdown(node);
     }
 
     @Override
     protected MemoryConfig makeConfiguration() {
         return new MemoryConfig(this.getConnectedNode());
-    }
-
-    private void initialize() {
-
-        this.influxDb = new InfluxDb(this, this.configuration);
-        this.stateDataManager = new StateDataWatcher(this.getConnectedNode(), this.influxDb);
-        this.topicWatcher = new TopicWatcher(this.influxDb);
-
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                while (true) {
-                    MemoryNode.this.watchTopics();
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-            }
-        }).start();
-    }
-
-    private void watchTopics() {
-        HashMap<String, String> topicsTypes = this.getConnectedNode().getTopicNamesAndTypes();
-
-        this.topicWatcher.checkTopics(topicsTypes);
-
-        if (topicsTypes.size() > 0) {
-            for (Entry<String, String> entity : topicsTypes.entrySet()) {
-                this.stateDataManager.addTopic(entity.getKey(), entity.getValue());
-            }
-        }else {
-            this.logI("Empty topics !");
-        }
     }
 
     public static void main(String[] args) throws InterruptedException {

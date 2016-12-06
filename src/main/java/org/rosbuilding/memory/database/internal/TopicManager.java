@@ -1,36 +1,59 @@
+/*
+ * This file is part of the Alfred package.
+ *
+ * (c) Mickael Gaillard <mick.gaillard@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 package org.rosbuilding.memory.database.internal;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+
 import org.ros2.rcljava.internal.message.Message;
 import org.ros2.rcljava.node.Node;
 import org.ros2.rcljava.node.topic.Consumer;
 import org.ros2.rcljava.node.topic.Subscription;
+
 import org.rosbuilding.memory.database.internal.subscribers.BotSubscriber;
 import org.rosbuilding.memory.database.internal.subscribers.MediaSubscriber;
 import org.rosbuilding.memory.database.internal.subscribers.StateDataSubscriber;
 import org.rosbuilding.memory.database.internal.subscribers.TemperatureSubscriber;
+import org.rosbuilding.memory.database.internal.tsdb.TimeSerieManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import smarthome_comm_msgs.msg.Command;
 import smarthome_heater_msgs.msg.SensorTemperatureStateData;
 import smarthome_media_msgs.msg.StateData;
 
-public class StateDataWatcher {
-    private final InfluxDb influx;
-    private final Node node;
-    private final Map<String, StateDataSubscriber<? extends Message>> stateDataSubscribers;
-    private final Map<String, Subscription<? extends Message>> subscribers;
+/** Manager of Topics subscriptions. */
+public class TopicManager {
 
-    public StateDataWatcher(Node node, InfluxDb influx) {
-        this.stateDataSubscribers = new HashMap<>();
-        this.subscribers = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(TopicManager.class);
+
+    private final TimeSerieManager influx;
+    private final Node node;
+
+    private final Map<String, StateDataSubscriber<? extends Message>> stateDataSubscribers = new HashMap<>();
+    private final Map<String, Subscription<? extends Message>> subscribers = new HashMap<>();
+
+    public TopicManager(Node node, TimeSerieManager influx) {
         this.node = node;
         this.influx = influx;
     }
 
-    public boolean addTopic(String topic, String messageType) {
+    /**
+     * New topic created.
+     * @param topic
+     * @param messageType
+     * @return
+     */
+    public boolean add(String topic, String messageType) {
         boolean result = false;
         StateDataSubscriber<? extends Message> stateDataSubscriber = null;
 
@@ -43,20 +66,29 @@ public class StateDataWatcher {
         }
 
         if (stateDataSubscriber != null) {
+            logger.info("Add topic : " + topic);
             result = this.addStateData(stateDataSubscriber);
         }
 
         return result;
     }
 
-    public void removeAllTopics() {
-        for (StateDataSubscriber<? extends Message> stateDataSubscriber : this.stateDataSubscribers.values()) {
-            this.removeTopic(stateDataSubscriber.getTopic());
-        }
+    /**
+     * Remove topic removed.
+     * @param topic
+     */
+    public void remove(String topic) {
+        logger.info("Remove topic : " + topic);
+        this.removeStateDate(this.stateDataSubscribers.get(topic));
     }
 
-    public void removeTopic(String topic) {
-        this.removeStateDate(this.stateDataSubscribers.get(topic));
+    /**
+     * Clean all topics subscriber
+     */
+    public void clear() {
+        for (StateDataSubscriber<? extends Message> stateDataSubscriber : this.stateDataSubscribers.values()) {
+            this.remove(stateDataSubscriber.getTopic());
+        }
     }
 
     private boolean addStateData(StateDataSubscriber<? extends Message> stateDataSubscriber) {
@@ -95,7 +127,7 @@ public class StateDataWatcher {
                         node.getLog().info("receive message in subscriber");
 
                         if (stateDataSubscriber.mustInsert(message)) {
-                            StateDataWatcher.this.insert(
+                            TopicManager.this.insert(
                                     stateDataSubscriber.getMessageDate(message),
                                     stateDataSubscriber.getMeasurement(),
                                     stateDataSubscriber.getMessageTags(message),

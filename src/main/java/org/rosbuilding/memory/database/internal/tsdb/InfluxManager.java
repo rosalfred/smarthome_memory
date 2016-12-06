@@ -1,4 +1,12 @@
-package org.rosbuilding.memory.database.internal;
+/*
+ * This file is part of the Alfred package.
+ *
+ * (c) Mickael Gaillard <mick.gaillard@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+package org.rosbuilding.memory.database.internal.tsdb;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -7,12 +15,22 @@ import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Point.Builder;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
 import org.rosbuilding.memory.database.MemoryConfig;
 import org.rosbuilding.memory.database.MemoryNode;
 
-public class InfluxDb {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** InfluxDB Implementation TSDB Manager. */
+public class InfluxManager implements TimeSerieManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(InfluxManager.class);
+
+    private static final String POLICY = "autogen";
 
     private final MemoryNode node;
 
@@ -27,16 +45,17 @@ public class InfluxDb {
     protected InfluxDB influxDB;
 
     /**
-     * Construct.
+     * Constructor of InfluxDB Manager.
      *
-     * @param setting
-     *            The settings.
+     * @param setting The settings of influxDB.
      */
-    public InfluxDb(MemoryNode node, MemoryConfig config) {
+    public InfluxManager(MemoryNode node, MemoryConfig config) {
         this.node = node;
         this.config = config;
-        String cnxString = String.format("http://%s:%d", this.config.getHost(), this.config.getPort());
 
+        logger.debug("Connection to InfluxDb...");
+
+        String cnxString = String.format("http://%s:%d", this.config.getHost(), this.config.getPort());
         this.influxDB = InfluxDBFactory.connect(
                 cnxString,
                 this.config.getUser(),
@@ -49,8 +68,13 @@ public class InfluxDb {
         //this.influxDB.setLogLevel(LogLevel.FULL);
     }
 
+    /* (non-Javadoc)
+     * @see org.rosbuilding.memory.database.internal.TimeSerieDB#write(org.joda.time.DateTime, java.lang.String, java.util.Map, java.util.Map)
+     */
+    @Override
     public void write(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields) {
-        this.node.logI("Write data...");
+        logger.debug("Write on InfluxDb...");
+        //        this.node.logI("Write data...");
 
         long time = date.withZone(DateTimeZone.UTC).getMillis();
 
@@ -58,12 +82,11 @@ public class InfluxDb {
         builder.tag(tags);
         builder.fields(fields);
 
-        Point point = builder.build();
-
         try {
-            this.influxDB.write(this.config.getName(), "autogen", point);
+            Point point = builder.build();
+            this.influxDB.write(this.config.getName(), POLICY, point);
         } catch (Exception e) {
-            this.node.getConnectedNode().getLog().debug(e.getMessage());
+            this.node.logD(e.getMessage());
         }
     }
 }
