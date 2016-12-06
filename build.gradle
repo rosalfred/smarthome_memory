@@ -29,7 +29,7 @@ ament {
     scripts {
         main {
             applicationName = project.name
-            mainClassName = 'org.rosbuilding.memory.database.MemoryNode'
+            mainClassName = 'org.rosbuilding.memory.MemoryNode'
         }
     }
 }

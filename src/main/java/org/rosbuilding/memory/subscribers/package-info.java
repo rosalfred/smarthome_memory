@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 /**
- *
- */
+*
+* @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
+* @author Mickael Gaillard <mick.gaillard@gmail.com>
+*/
 package org.rosbuilding.memory.subscribers;

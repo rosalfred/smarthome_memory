@@ -77,9 +77,7 @@ public class InfluxManager implements TimeSerieManager {
      */
     @Override
     public void write(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields) {
-        logger.debug("Write on InfluxDb...");
-        //        this.node.logI("Write data...");
-
+        logger.debug("Write data on InfluxDb...");
         long time = date.withZone(DateTimeZone.UTC).getMillis();
 
         Builder builder = Point.measurement(measurement).time(time, TimeUnit.MILLISECONDS);

@@ -21,12 +21,10 @@
   <buildtool_depend>rosidl_generator_java</buildtool_depend>
 
   <build_depend>rcljava</build_depend>
-  <build_depend>smarthome_comm_msgs</build_depend>
   <build_depend>smarthome_common_driver</build_depend>
 
   <exec_depend>rosidl_generator_java</exec_depend>
   <exec_depend>rcljava</exec_depend>
-  <exec_depend>smarthome_comm_msgs</exec_depend>
   <exec_depend>smarthome_common_driver</exec_depend>
 
   <export>

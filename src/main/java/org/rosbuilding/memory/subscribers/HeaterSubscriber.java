@@ -1,3 +1,11 @@
+/*
+ * This file is part of the Alfred package.
+ *
+ * (c) Mickael Gaillard <mick.gaillard@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 package org.rosbuilding.memory.subscribers;
 
 import java.util.HashMap;
@@ -8,6 +16,11 @@ import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
 
 import smarthome_heater_msgs.msg.SensorTemperatureStateData;
 
+/**
+*
+* @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
+* @author Mickael Gaillard <mick.gaillard@gmail.com>
+*/
 public class HeaterSubscriber extends MessageSubscriberBase<SensorTemperatureStateData> {
 
     public HeaterSubscriber(String topic) {

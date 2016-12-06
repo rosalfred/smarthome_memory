@@ -10,6 +10,8 @@ package org.rosbuilding.memory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.joda.time.DateTime;
 
@@ -21,15 +23,12 @@ import org.ros2.rcljava.node.topic.Subscription;
 import org.rosbuilding.memory.subscribers.CommSubscriber;
 import org.rosbuilding.memory.subscribers.MediaSubscriber;
 import org.rosbuilding.memory.subscribers.HeaterSubscriber;
+import org.rosbuilding.memory.subscribers.LightSubscriber;
 import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
 import org.rosbuilding.memory.tsdb.TimeSerieManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import smarthome_comm_msgs.msg.Command;
-import smarthome_heater_msgs.msg.SensorTemperatureStateData;
-import smarthome_media_msgs.msg.StateData;
 
 /**
  * Manager of Topics subscriptions.
@@ -42,6 +41,17 @@ public class SubscriberManager {
 
     private final TimeSerieManager influx;
     private final Node node;
+
+    private final static ConcurrentHashMap<Class<? extends Message>, Class<?>> SUBSCRIBER_MAPPING = new ConcurrentHashMap<Class<? extends Message>, Class<?>>() {
+        /** Serial Id */
+        private static final long serialVersionUID = 1L;
+        {
+            put(smarthome_comm_msgs.msg.Command.class,                          CommSubscriber.class);
+            put(smarthome_media_msgs.msg.StateData.class,                       MediaSubscriber.class);
+            put(smarthome_heater_msgs.msg.SensorTemperatureStateData.class,     HeaterSubscriber.class);
+            put(smarthome_light_msgs.msg.LightingStateData.class,               LightSubscriber.class);
+        }
+    };
 
     /** List of Topics and types. */
     private final Map<String, String> topicCaches = new HashMap<String, String>();
@@ -59,18 +69,26 @@ public class SubscriberManager {
      * @param messageType
      * @return
      */
+    @SuppressWarnings("unchecked")
     public boolean add(String topic, String messageType) {
         boolean result = false;
         MessageSubscriberBase<? extends Message> stateDataSubscriber = null;
 
         this.topicCaches.put(topic, messageType);
 
-        if (isMessageType(messageType, Command.class)) {
-            stateDataSubscriber = new CommSubscriber(topic);
-        } else if (isMessageType(messageType, StateData.class)) {
-            stateDataSubscriber = new MediaSubscriber(topic);
-        } else if (isMessageType(messageType, SensorTemperatureStateData.class)) {
-            stateDataSubscriber = new HeaterSubscriber(topic);
+        for (Entry<Class<? extends Message>, Class<?>> subscriber : SUBSCRIBER_MAPPING.entrySet()) {
+            if (isMessageType(messageType, subscriber.getKey())) {
+                try {
+                    Object obj = subscriber.getValue().getConstructor(String.class).newInstance(topic);
+                    if (obj instanceof MessageSubscriberBase<?>) {
+                        stateDataSubscriber = (MessageSubscriberBase<? extends Message>) obj;
+                        break;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
         }
 
         if (stateDataSubscriber != null) {
@@ -140,7 +158,7 @@ public class SubscriberManager {
                 new Consumer<T>() {
                     @Override
                     public void accept(T message) {
-                        node.getLog().info("receive message in subscriber");
+                        logger.debug("Receive message in subscriber");
 
                         if (stateDataSubscriber.mustInsert(message)) {
                             SubscriberManager.this.insert(
