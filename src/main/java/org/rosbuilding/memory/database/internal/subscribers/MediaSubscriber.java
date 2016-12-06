@@ -5,12 +5,13 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.rosbuilding.common.media.MediaStateDataComparator;
+import org.rosbuilding.memory.database.internal.subscribers.internal.MessageSubscriberBase;
 
 import smarthome_media_msgs.msg.StateData;
 
-public class MediaSubscriber extends StateDataSubscriber<StateData> {
+public class MediaSubscriber extends MessageSubscriberBase<StateData> {
     public MediaSubscriber(String topic) {
-        super(topic, StateData.class, "mediaplayer", new MediaStateDataComparator());
+        super(topic, StateData.class, "node_media", new MediaStateDataComparator());
     }
 
     @Override

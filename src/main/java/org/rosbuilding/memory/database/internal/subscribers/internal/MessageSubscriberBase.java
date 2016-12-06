@@ -1,4 +1,4 @@
-package org.rosbuilding.memory.database.internal.subscribers;
+package org.rosbuilding.memory.database.internal.subscribers.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 import org.ros2.rcljava.internal.message.Message;
 import org.rosbuilding.common.StateDataComparator;
 
-public abstract class StateDataSubscriber<T extends Message> {
+public abstract class MessageSubscriberBase<T extends Message> {
     private final String topic;
     private final Class<T> messageClass;
     private final String measurement;
@@ -15,14 +15,14 @@ public abstract class StateDataSubscriber<T extends Message> {
 
     private T lastMessage;
 
-    protected StateDataSubscriber(
+    protected MessageSubscriberBase(
             String topic,
             Class<T> messageClass,
             String measurement) {
         this(topic, messageClass, measurement, null);
     }
 
-    protected StateDataSubscriber(
+    protected MessageSubscriberBase(
             String topic,
             Class<T> messageClass,
             String measurement,

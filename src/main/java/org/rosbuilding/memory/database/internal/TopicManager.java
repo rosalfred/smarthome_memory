@@ -18,10 +18,10 @@ import org.ros2.rcljava.node.Node;
 import org.ros2.rcljava.node.topic.Consumer;
 import org.ros2.rcljava.node.topic.Subscription;
 
-import org.rosbuilding.memory.database.internal.subscribers.BotSubscriber;
+import org.rosbuilding.memory.database.internal.subscribers.CommSubscriber;
 import org.rosbuilding.memory.database.internal.subscribers.MediaSubscriber;
-import org.rosbuilding.memory.database.internal.subscribers.StateDataSubscriber;
-import org.rosbuilding.memory.database.internal.subscribers.TemperatureSubscriber;
+import org.rosbuilding.memory.database.internal.subscribers.HeaterSubscriber;
+import org.rosbuilding.memory.database.internal.subscribers.internal.MessageSubscriberBase;
 import org.rosbuilding.memory.database.internal.tsdb.TimeSerieManager;
 
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class TopicManager {
     private final TimeSerieManager influx;
     private final Node node;
 
-    private final Map<String, StateDataSubscriber<? extends Message>> stateDataSubscribers = new HashMap<>();
+    private final Map<String, MessageSubscriberBase<? extends Message>> stateDataSubscribers = new HashMap<>();
     private final Map<String, Subscription<? extends Message>> subscribers = new HashMap<>();
 
     public TopicManager(Node node, TimeSerieManager influx) {
@@ -59,14 +59,14 @@ public class TopicManager {
      */
     public boolean add(String topic, String messageType) {
         boolean result = false;
-        StateDataSubscriber<? extends Message> stateDataSubscriber = null;
+        MessageSubscriberBase<? extends Message> stateDataSubscriber = null;
 
         if (isMessageType(messageType, Command.class)) {
-            stateDataSubscriber = new BotSubscriber(topic);
+            stateDataSubscriber = new CommSubscriber(topic);
         } else if (isMessageType(messageType, StateData.class)) {
             stateDataSubscriber = new MediaSubscriber(topic);
         } else if (isMessageType(messageType, SensorTemperatureStateData.class)) {
-            stateDataSubscriber = new TemperatureSubscriber(topic);
+            stateDataSubscriber = new HeaterSubscriber(topic);
         }
 
         if (stateDataSubscriber != null) {
@@ -90,12 +90,12 @@ public class TopicManager {
      * Clean all topics subscriber
      */
     public void clear() {
-        for (StateDataSubscriber<? extends Message> stateDataSubscriber : this.stateDataSubscribers.values()) {
+        for (MessageSubscriberBase<? extends Message> stateDataSubscriber : this.stateDataSubscribers.values()) {
             this.remove(stateDataSubscriber.getTopic());
         }
     }
 
-    private boolean addStateData(StateDataSubscriber<? extends Message> stateDataSubscriber) {
+    private boolean addStateData(MessageSubscriberBase<? extends Message> stateDataSubscriber) {
         boolean result = false;
 
         if (stateDataSubscriber != null && !this.stateDataSubscribers.containsKey(stateDataSubscriber.getTopic())) {
@@ -108,7 +108,7 @@ public class TopicManager {
         return result;
     }
 
-    private void removeStateDate(StateDataSubscriber<? extends Message> stateDataSubscriber) {
+    private void removeStateDate(MessageSubscriberBase<? extends Message> stateDataSubscriber) {
         if (stateDataSubscriber != null) {
             this.stateDataSubscribers.remove(stateDataSubscriber.getTopic());
             Subscription<? extends Message> subscription = this.subscribers.remove(stateDataSubscriber.getTopic());
@@ -119,7 +119,7 @@ public class TopicManager {
         }
     }
 
-    private <T extends Message> void createSubscriber(final StateDataSubscriber<T> stateDataSubscriber) {
+    private <T extends Message> void createSubscriber(final MessageSubscriberBase<T> stateDataSubscriber) {
         this.node.getLog().info("init subscriber on : " + stateDataSubscriber.getTopic());
 
         Subscription<T> subscription = this.node.<T>createSubscription(

@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.rosbuilding.memory.database.internal.subscribers.internal.MessageSubscriberBase;
 
 import smarthome_comm_msgs.msg.Command;
 
-public class BotSubscriber extends StateDataSubscriber<Command> {
+public class CommSubscriber extends MessageSubscriberBase<Command> {
 
-    public BotSubscriber(String topic) {
-        super(topic, Command.class, "bot");
+    public CommSubscriber(String topic) {
+        super(topic, Command.class, "user_speech");
     }
 
     @Override

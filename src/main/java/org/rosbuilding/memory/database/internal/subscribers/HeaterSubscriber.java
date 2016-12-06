@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.rosbuilding.memory.database.internal.subscribers.internal.MessageSubscriberBase;
 
 import smarthome_heater_msgs.msg.SensorTemperatureStateData;
 
-public class TemperatureSubscriber extends StateDataSubscriber<SensorTemperatureStateData> {
+public class HeaterSubscriber extends MessageSubscriberBase<SensorTemperatureStateData> {
 
-    public TemperatureSubscriber(String topic) {
-        super(topic, SensorTemperatureStateData.class, "temperature");
+    public HeaterSubscriber(String topic) {
+        super(topic, SensorTemperatureStateData.class, "node_thermal");
     }
 
     @Override
