@@ -26,8 +26,8 @@ public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
     /** Time Serie DataBase */
     private TimeSerieManager timeSerieManager;
 
-    /** Topic manager of subscription. */
-    private TopicManager topicManager;
+    /** Subscription manager. */
+    private SubscriberManager subscriberManager;
 
     /** Watch lifecycle Topics */
     private TopicWatcher topicWatcher;
@@ -37,17 +37,17 @@ public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
         super.onStart(connectedNode);
 
         this.timeSerieManager = new InfluxManager(this, this.configuration);
-        this.topicManager = new TopicManager(this.getConnectedNode(), this.timeSerieManager);
+        this.subscriberManager = new SubscriberManager(this.getConnectedNode(), this.timeSerieManager);
 
         // Watcher of Topics. Detecte if new or destroy topics.
-        this.topicWatcher = new TopicWatcher(this.getConnectedNode(), this.topicManager);
+        this.topicWatcher = new TopicWatcher(this.getConnectedNode(), this.subscriberManager);
         this.topicWatcher.start();
     }
 
     @Override
     public void onShutdown(Node node) {
         this.topicWatcher.stop();
-        this.topicManager.clear();
+        this.subscriberManager.clear();
 
         super.onShutdown(node);
     }

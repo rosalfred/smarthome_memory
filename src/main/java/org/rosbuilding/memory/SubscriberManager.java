@@ -36,17 +36,19 @@ import smarthome_media_msgs.msg.StateData;
  *
  * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
-public class TopicManager {
+public class SubscriberManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(TopicManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(SubscriberManager.class);
 
     private final TimeSerieManager influx;
     private final Node node;
 
+    /** List of Topics and types. */
+    private final Map<String, String> topicCaches = new HashMap<String, String>();
     private final Map<String, MessageSubscriberBase<? extends Message>> stateDataSubscribers = new HashMap<>();
     private final Map<String, Subscription<? extends Message>> subscribers = new HashMap<>();
 
-    public TopicManager(Node node, TimeSerieManager influx) {
+    public SubscriberManager(Node node, TimeSerieManager influx) {
         this.node = node;
         this.influx = influx;
     }
@@ -60,6 +62,8 @@ public class TopicManager {
     public boolean add(String topic, String messageType) {
         boolean result = false;
         MessageSubscriberBase<? extends Message> stateDataSubscriber = null;
+
+        this.topicCaches.put(topic, messageType);
 
         if (isMessageType(messageType, Command.class)) {
             stateDataSubscriber = new CommSubscriber(topic);
@@ -81,18 +85,26 @@ public class TopicManager {
      * Remove topic removed.
      * @param topic
      */
-    public void remove(String topic) {
+    public synchronized void remove(String topic) {
         logger.info("Remove topic : " + topic);
+        this.topicCaches.remove(topic);
         this.removeStateDate(this.stateDataSubscribers.get(topic));
     }
 
     /**
      * Clean all topics subscriber
      */
-    public void clear() {
+    public synchronized void clear() {
         for (MessageSubscriberBase<? extends Message> stateDataSubscriber : this.stateDataSubscribers.values()) {
             this.remove(stateDataSubscriber.getTopic());
         }
+    }
+
+    /**
+     * @return the topicCaches
+     */
+    public synchronized final Map<String, String> getTopicCaches() {
+        return new HashMap<String, String>(topicCaches);
     }
 
     private boolean addStateData(MessageSubscriberBase<? extends Message> stateDataSubscriber) {
@@ -131,7 +143,7 @@ public class TopicManager {
                         node.getLog().info("receive message in subscriber");
 
                         if (stateDataSubscriber.mustInsert(message)) {
-                            TopicManager.this.insert(
+                            SubscriberManager.this.insert(
                                     stateDataSubscriber.getMessageDate(message),
                                     stateDataSubscriber.getMeasurement(),
                                     stateDataSubscriber.getMessageTags(message),

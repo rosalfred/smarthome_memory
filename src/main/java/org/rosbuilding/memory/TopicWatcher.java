@@ -34,10 +34,7 @@ public class TopicWatcher implements Runnable {
     private final Node node;
 
     /** Topics Manager. */
-    private final TopicManager topicManager;
-
-    /** List of Topics and types. */
-    private final Map<String, String> topicsTypes = new HashMap<String, String>();
+    private final SubscriberManager subscriberManager;
 
     // Thread component.
     private volatile Thread blinker;
@@ -48,9 +45,9 @@ public class TopicWatcher implements Runnable {
      * @param node
      * @param topicManager
      */
-    public TopicWatcher(final Node node, final TopicManager topicManager) {
+    public TopicWatcher(final Node node, final SubscriberManager topicManager) {
         this.node = node;
-        this.topicManager = topicManager;
+        this.subscriberManager = topicManager;
     }
 
     /** Start the watcher */
@@ -72,6 +69,8 @@ public class TopicWatcher implements Runnable {
         Thread thisThread = Thread.currentThread();
 
         while (blinker == thisThread) {
+            TopicWatcher.this.checkTopics();
+
             try {
                 Thread.sleep(5000);
 
@@ -82,8 +81,6 @@ public class TopicWatcher implements Runnable {
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
-
-            TopicWatcher.this.checkTopics();
         }
     }
 
@@ -92,21 +89,19 @@ public class TopicWatcher implements Runnable {
 //        List<String> nodes = this.node.getNodes();
         HashMap<String, String> topicsTypes = this.node.getTopicNamesAndTypes();
 
-        MapDifference<String, String> diff = Maps.difference(this.topicsTypes, topicsTypes);
+        MapDifference<String, String> diff = Maps.difference(this.subscriberManager.getTopicCaches(), topicsTypes);
         Map<String, String> removed = diff.entriesOnlyOnLeft();
         Map<String, String> added   = diff.entriesOnlyOnRight();
 
         // TODO Remove from detected node, not only from topic (because is subscribed)
         // Remove removed topic.
         for (Entry<String, String> topic : removed.entrySet()) {
-            this.topicsTypes.remove(topic.getKey());
-            this.topicManager.remove(topic.getKey());
+            this.subscriberManager.remove(topic.getKey());
         }
 
         // Add added topic.
         for (Entry<String, String> topic : added.entrySet()) {
-            this.topicsTypes.put(topic.getKey(), topic.getValue());
-            this.topicManager.add(topic.getKey(), topic.getValue());
+            this.subscriberManager.add(topic.getKey(), topic.getValue());
         }
     }
 }
