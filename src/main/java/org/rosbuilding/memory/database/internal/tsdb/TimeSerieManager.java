@@ -12,7 +12,11 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
-/** Time Serie Database Manager. */
+/**
+ * Time Serie Database Manager.
+ *
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
+ */
 public interface TimeSerieManager {
 
     /**

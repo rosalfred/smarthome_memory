@@ -15,6 +15,6 @@
  * <li>Mongo (TODO)
  * <li>Cassandra (TODO)
  *
- *
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
 package org.rosbuilding.memory.database.internal.tsdb;

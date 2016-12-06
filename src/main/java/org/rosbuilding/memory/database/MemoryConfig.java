@@ -14,7 +14,7 @@ import org.rosbuilding.common.NodeDriverConnectedConfig;
 /**
 *
 * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
-*
+* @author Mickael Gaillard <mick.gaillard@gmail.com>
 */
 public class MemoryConfig extends NodeDriverConnectedConfig {
 

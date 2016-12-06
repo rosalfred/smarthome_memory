@@ -8,5 +8,7 @@
  */
 /**
  * Internal packages.
+ *
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
 package org.rosbuilding.memory.database.internal;

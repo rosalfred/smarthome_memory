@@ -21,7 +21,7 @@ import org.rosbuilding.memory.database.internal.tsdb.TimeSerieManager;
  * Memory ROS Node.
  *
  * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
- *
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
 public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
 

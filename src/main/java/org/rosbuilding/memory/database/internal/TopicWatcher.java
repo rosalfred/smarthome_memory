@@ -23,6 +23,8 @@ import com.google.common.collect.Maps;
 /**
  * Topics watcher.<p>
  * Detect new/destroy Topics.
+ *
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
 public class TopicWatcher implements Runnable {
 

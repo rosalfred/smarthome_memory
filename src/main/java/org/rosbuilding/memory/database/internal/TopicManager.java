@@ -31,7 +31,11 @@ import smarthome_comm_msgs.msg.Command;
 import smarthome_heater_msgs.msg.SensorTemperatureStateData;
 import smarthome_media_msgs.msg.StateData;
 
-/** Manager of Topics subscriptions. */
+/**
+ * Manager of Topics subscriptions.
+ *
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
+ */
 public class TopicManager {
 
     private static final Logger logger = LoggerFactory.getLogger(TopicManager.class);

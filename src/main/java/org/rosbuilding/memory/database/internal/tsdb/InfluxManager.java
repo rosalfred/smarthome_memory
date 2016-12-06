@@ -25,7 +25,11 @@ import org.rosbuilding.memory.database.MemoryNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** InfluxDB Implementation TSDB Manager. */
+/**
+ * InfluxDB Implementation TSDB Manager.
+ *
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
+ */
 public class InfluxManager implements TimeSerieManager {
 
     private static final Logger logger = LoggerFactory.getLogger(InfluxManager.class);
