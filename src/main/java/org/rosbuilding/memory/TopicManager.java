@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package org.rosbuilding.memory.database.internal;
+package org.rosbuilding.memory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +18,11 @@ import org.ros2.rcljava.node.Node;
 import org.ros2.rcljava.node.topic.Consumer;
 import org.ros2.rcljava.node.topic.Subscription;
 
-import org.rosbuilding.memory.database.internal.subscribers.CommSubscriber;
-import org.rosbuilding.memory.database.internal.subscribers.MediaSubscriber;
-import org.rosbuilding.memory.database.internal.subscribers.HeaterSubscriber;
-import org.rosbuilding.memory.database.internal.subscribers.internal.MessageSubscriberBase;
-import org.rosbuilding.memory.database.internal.tsdb.TimeSerieManager;
+import org.rosbuilding.memory.subscribers.CommSubscriber;
+import org.rosbuilding.memory.subscribers.MediaSubscriber;
+import org.rosbuilding.memory.subscribers.HeaterSubscriber;
+import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
+import org.rosbuilding.memory.tsdb.TimeSerieManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

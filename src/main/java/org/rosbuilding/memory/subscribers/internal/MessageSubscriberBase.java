@@ -1,4 +1,4 @@
-package org.rosbuilding.memory.database.internal.subscribers.internal;
+package org.rosbuilding.memory.subscribers.internal;
 
 import java.util.HashMap;
 import java.util.Map;

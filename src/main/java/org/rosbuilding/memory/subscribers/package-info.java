@@ -9,4 +9,4 @@
 /**
  *
  */
-package org.rosbuilding.memory.database.internal.subscribers.internal;
+package org.rosbuilding.memory.subscribers;

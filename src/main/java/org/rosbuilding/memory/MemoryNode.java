@@ -6,16 +6,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package org.rosbuilding.memory.database;
+package org.rosbuilding.memory;
 
 import org.ros2.rcljava.RCLJava;
 import org.ros2.rcljava.node.Node;
 
 import org.rosbuilding.common.BaseSimpleNode;
-import org.rosbuilding.memory.database.internal.TopicManager;
-import org.rosbuilding.memory.database.internal.TopicWatcher;
-import org.rosbuilding.memory.database.internal.tsdb.InfluxManager;
-import org.rosbuilding.memory.database.internal.tsdb.TimeSerieManager;
+import org.rosbuilding.memory.tsdb.InfluxManager;
+import org.rosbuilding.memory.tsdb.TimeSerieManager;
 
 /**
  * Memory ROS Node.

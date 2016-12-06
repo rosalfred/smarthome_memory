@@ -1,10 +1,10 @@
-package org.rosbuilding.memory.database.internal.subscribers;
+package org.rosbuilding.memory.subscribers;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
-import org.rosbuilding.memory.database.internal.subscribers.internal.MessageSubscriberBase;
+import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
 
 import smarthome_heater_msgs.msg.SensorTemperatureStateData;
 

@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package org.rosbuilding.memory.database.internal.tsdb;
+package org.rosbuilding.memory.tsdb;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -19,8 +19,8 @@ import org.influxdb.dto.Point.Builder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import org.rosbuilding.memory.database.MemoryConfig;
-import org.rosbuilding.memory.database.MemoryNode;
+import org.rosbuilding.memory.MemoryConfig;
+import org.rosbuilding.memory.MemoryNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

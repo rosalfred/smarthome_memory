@@ -7,8 +7,6 @@
  * file that was distributed with this source code.
  */
 /**
- * Internal packages.
  *
- * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
-package org.rosbuilding.memory.database.internal;
+package org.rosbuilding.memory.subscribers.internal;

@@ -1,11 +1,11 @@
-package org.rosbuilding.memory.database.internal.subscribers;
+package org.rosbuilding.memory.subscribers;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.rosbuilding.common.media.MediaStateDataComparator;
-import org.rosbuilding.memory.database.internal.subscribers.internal.MessageSubscriberBase;
+import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
 
 import smarthome_media_msgs.msg.StateData;
 

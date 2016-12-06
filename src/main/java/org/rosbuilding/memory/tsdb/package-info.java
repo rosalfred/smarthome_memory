@@ -17,4 +17,4 @@
  *
  * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
-package org.rosbuilding.memory.database.internal.tsdb;
+package org.rosbuilding.memory.tsdb;
