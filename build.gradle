@@ -16,11 +16,14 @@ repositories {
 ament {generateEclipse=true}
 
 dependencies {
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile 'joda-time:joda-time:2.9.4'
-    compile 'org.influxdb:influxdb-java:2.3'
+    compile 'joda-time:joda-time:2.+'
+    compile 'com.google.guava:guava:19+'
+    compile 'com.google.code.gson:gson:2.+'
+
+    compile 'org.influxdb:influxdb-java:2.+'
 
     runtime fileTree(dir: 'libs', include: '*.jar')
+    testCompile 'junit:junit:4.+'
 }
 
 ament {
