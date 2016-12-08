@@ -17,7 +17,7 @@ import org.joda.time.DateTime;
 
 import org.ros2.rcljava.internal.message.Message;
 import org.ros2.rcljava.node.Node;
-import org.ros2.rcljava.node.topic.Consumer;
+import org.ros2.rcljava.node.topic.SubscriptionCallback;
 import org.ros2.rcljava.node.topic.Subscription;
 
 import org.rosbuilding.memory.subscribers.CommSubscriber;
@@ -155,9 +155,9 @@ public class SubscriberManager {
         Subscription<T> subscription = this.node.<T>createSubscription(
                 stateDataSubscriber.getType(),
                 stateDataSubscriber.getTopic(),
-                new Consumer<T>() {
+                new SubscriptionCallback<T>() {
                     @Override
-                    public void accept(T message) {
+                    public void dispatch(T message) {
                         logger.debug("Receive message in subscriber");
 
                         if (stateDataSubscriber.mustInsert(message)) {
