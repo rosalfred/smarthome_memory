@@ -14,27 +14,27 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
 
-import smarthome_light_msgs.msg.LightingStateData;
+import smarthome_light_msgs.msg.StateData;
 
 /**
 *
 * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
 * @author Mickael Gaillard <mick.gaillard@gmail.com>
 */
-public class LightSubscriber extends MessageSubscriberBase<LightingStateData> {
+public class LightSubscriber extends MessageSubscriberBase<StateData> {
 
     public LightSubscriber(String topic) {
-        super(topic, LightingStateData.class, "node_luminous");
+        super(topic, StateData.class, "node_luminous");
     }
 
     @Override
-    public DateTime getMessageDate(LightingStateData message) {
+    public DateTime getMessageDate(StateData message) {
         //return new DateTime(message.getHeader().getStamp().getSec());
         return DateTime.now();
     }
 
     @Override
-    public Map<String, Object> getMessageFields(LightingStateData message) {
+    public Map<String, Object> getMessageFields(StateData message) {
         Map<String, Object> result = new HashMap<>();
 
 //        result.put("state", message.getState());

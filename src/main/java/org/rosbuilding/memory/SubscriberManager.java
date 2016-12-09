@@ -49,7 +49,7 @@ public class SubscriberManager {
             put(smarthome_comm_msgs.msg.Command.class,                          CommSubscriber.class);
             put(smarthome_media_msgs.msg.StateData.class,                       MediaSubscriber.class);
             put(smarthome_heater_msgs.msg.SensorTemperatureStateData.class,     HeaterSubscriber.class);
-            put(smarthome_light_msgs.msg.LightingStateData.class,               LightSubscriber.class);
+            put(smarthome_light_msgs.msg.StateData.class,                       LightSubscriber.class);
         }
     };
 
