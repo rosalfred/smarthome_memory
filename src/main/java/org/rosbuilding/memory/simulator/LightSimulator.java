@@ -9,6 +9,7 @@
 package org.rosbuilding.memory.simulator;
 
 import org.ros2.rcljava.node.Node;
+import org.rosbuilding.memory.simulator.base.AbstractSimulator;
 
 import geometry_msgs.msg.Point;
 import sensor_msgs.msg.Illuminance;
@@ -16,9 +17,11 @@ import smarthome_light_msgs.msg.Hsb;
 import smarthome_light_msgs.msg.StateData;
 
 public class LightSimulator extends AbstractSimulator<StateData> {
+    private static final String TOPIC = "/home/simulator/light1/statedata";
+    private static final int RATE = 1;
 
     public LightSimulator(Node node, ThreadGroup group) {
-        super(StateData.class, node, group, 1, "/home/simulator/light1/statedata");
+        super(StateData.class, node, group, RATE, TOPIC);
     }
 
     @Override

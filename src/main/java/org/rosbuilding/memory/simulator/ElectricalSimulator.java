@@ -8,30 +8,23 @@
  */
 package org.rosbuilding.memory.simulator;
 
-import org.ros2.rcljava.node.Node;
+//import org.ros2.rcljava.node.Node;
 
-import smarthome_comm_msgs.msg.Command;
-import smarthome_comm_msgs.msg.Context;
-
-public class ElectricalSimulator extends AbstractSimulator<Command> {
-
-    public ElectricalSimulator(Node node, ThreadGroup group) {
-        super(Command.class, node, group, 1, "/home");
-    }
-
-    @Override
-    protected Command makeMessage() {
-        Command msg = new Command();
-        msg.setAction("SAY");
-        msg.setSubject("Comment vas-tu ?");
-
-        Context ctx = msg.getContext();
-        ctx.setWhere("/");
-        ctx.setWho("Simulator");
-
-        return msg;
-    }
-
-
-
-}
+//public class ElectricalSimulator extends AbstractSimulator<StateData> {
+//    private static final String TOPIC = "/home/simulator/electrical1/statedata";
+//    private static final int RATE = 1;
+//
+//    public ElectricalSimulator(Node node, ThreadGroup group) {
+//        super(StateData.class, node, group, RATE, TOPIC);
+//    }
+//
+//    @Override
+//    protected StateData makeMessage() {
+//        StateData msg = new StateData();
+//
+//        return msg;
+//    }
+//
+//
+//
+//}

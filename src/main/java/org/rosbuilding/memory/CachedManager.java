@@ -8,7 +8,9 @@
  */
 package org.rosbuilding.memory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +26,7 @@ import org.rosbuilding.memory.subscribers.CommSubscriber;
 import org.rosbuilding.memory.subscribers.MediaSubscriber;
 import org.rosbuilding.memory.subscribers.HeaterSubscriber;
 import org.rosbuilding.memory.subscribers.LightSubscriber;
+import org.rosbuilding.memory.subscribers.internal.BadMessageException;
 import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
 import org.rosbuilding.memory.tsdb.TimeSerieManager;
 
@@ -35,9 +38,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
-public class SubscriberManager {
+public class CachedManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(SubscriberManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(CachedManager.class);
 
     private final TimeSerieManager influx;
     private final Node node;
@@ -53,12 +56,14 @@ public class SubscriberManager {
         }
     };
 
+    private final List<String> cachedNodes = new ArrayList<String>();
+    private final Map<String, String> cachedTopics = new HashMap<String, String>();
+
     /** List of Topics and types. */
-    private final Map<String, String> topicCaches = new HashMap<String, String>();
     private final Map<String, MessageSubscriberBase<? extends Message>> stateDataSubscribers = new HashMap<>();
     private final Map<String, Subscription<? extends Message>> subscribers = new HashMap<>();
 
-    public SubscriberManager(Node node, TimeSerieManager influx) {
+    public CachedManager(Node node, TimeSerieManager influx) {
         this.node = node;
         this.influx = influx;
     }
@@ -74,7 +79,7 @@ public class SubscriberManager {
         boolean result = false;
         MessageSubscriberBase<? extends Message> stateDataSubscriber = null;
 
-        this.topicCaches.put(topic, messageType);
+        this.cachedTopics.put(topic, messageType);
 
         for (Entry<Class<? extends Message>, Class<?>> subscriber : SUBSCRIBER_MAPPING.entrySet()) {
             if (isMessageType(messageType, subscriber.getKey())) {
@@ -105,7 +110,7 @@ public class SubscriberManager {
      */
     public synchronized void remove(String topic) {
         logger.info("Remove topic : " + topic);
-        this.topicCaches.remove(topic);
+        this.cachedTopics.remove(topic);
         this.removeStateDate(this.stateDataSubscribers.get(topic));
     }
 
@@ -122,7 +127,11 @@ public class SubscriberManager {
      * @return the topicCaches
      */
     public synchronized final Map<String, String> getTopicCaches() {
-        return new HashMap<String, String>(topicCaches);
+        return new HashMap<String, String>(cachedTopics);
+    }
+
+    public synchronized final Node getNode() {
+        return this.node;
     }
 
     private boolean addStateData(MessageSubscriberBase<? extends Message> stateDataSubscriber) {
@@ -161,11 +170,16 @@ public class SubscriberManager {
                         logger.debug("Receive message in subscriber");
 
                         if (stateDataSubscriber.mustInsert(message)) {
-                            SubscriberManager.this.insert(
-                                    stateDataSubscriber.getMessageDate(message),
-                                    stateDataSubscriber.getMeasurement(),
-                                    stateDataSubscriber.getMessageTags(message),
-                                    stateDataSubscriber.getMessageFields(message));
+                            try {
+                                CachedManager.this.insert(
+                                        stateDataSubscriber.getMessageDate(message),
+                                        stateDataSubscriber.getMeasurement(),
+                                        stateDataSubscriber.getMessageTags(message),
+                                        stateDataSubscriber.getMessageFields(message));
+                            } catch (BadMessageException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -182,4 +196,12 @@ public class SubscriberManager {
     private void insert(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields) {
         this.influx.write(date, measurement, tags, fields);
     }
+
+    public void update(List<String> detectedNodes) {
+        detectedNodes.remove(MemoryNode.NAME);
+
+        this.cachedNodes.clear();
+        this.cachedNodes.addAll(detectedNodes);
+    }
+
 }

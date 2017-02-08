@@ -14,6 +14,8 @@ import org.ros2.rcljava.node.Node;
 import org.rosbuilding.common.BaseSimpleNode;
 import org.rosbuilding.memory.tsdb.InfluxManager;
 import org.rosbuilding.memory.tsdb.TimeSerieManager;
+import org.rosbuilding.memory.watcher.NodeWatcher;
+import org.rosbuilding.memory.watcher.TopicWatcher;
 
 /**
  * Memory ROS Node.
@@ -23,31 +25,38 @@ import org.rosbuilding.memory.tsdb.TimeSerieManager;
  */
 public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
 
-    /** Time Serie DataBase */
-    private TimeSerieManager timeSerieManager;
+    public static final String NAME = "/memory";
 
-    /** Subscription manager. */
-    private SubscriberManager subscriberManager;
+    /** Cached manager. */
+    private CachedManager cachedManager;
 
     /** Watch lifecycle Topics */
     private TopicWatcher topicWatcher;
+
+    /** Watch lifecycle Nodes */
+    private NodeWatcher nodeWatcher;
 
     @Override
     public void onStart(Node connectedNode) {
         super.onStart(connectedNode);
 
-        this.timeSerieManager = new InfluxManager(this, this.configuration);
-        this.subscriberManager = new SubscriberManager(this.getConnectedNode(), this.timeSerieManager);
+        TimeSerieManager timeSerieManager = new InfluxManager(this, this.configuration);
+        this.cachedManager = new CachedManager(this.getConnectedNode(), timeSerieManager);
 
         // Watcher of Topics. Detecte if new or destroy topics.
-        this.topicWatcher = new TopicWatcher(this.getConnectedNode(), this.subscriberManager);
+        this.topicWatcher = new TopicWatcher(this.cachedManager);
         this.topicWatcher.start();
+
+        this.nodeWatcher = new NodeWatcher(this.cachedManager);
+        this.nodeWatcher.start();
     }
 
     @Override
     public void onShutdown(Node node) {
+        this.nodeWatcher.stop();
         this.topicWatcher.stop();
-        this.subscriberManager.clear();
+
+        this.cachedManager.clear();
 
         super.onShutdown(node);
     }
@@ -58,11 +67,8 @@ public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        // Initialize RCL
         RCLJava.rclJavaInit();
-
-        // Let's create a Node
-        Node node = RCLJava.createNode("memory");
+        Node node = RCLJava.createNode(NAME);
 
         MemoryNode memory = new MemoryNode();
         memory.onStart(node);

@@ -15,12 +15,21 @@ import org.joda.time.DateTime;
 import org.ros2.rcljava.internal.message.Message;
 import org.rosbuilding.common.StateDataComparator;
 
+import com.google.common.base.Strings;
+
 /**
 *
 * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
 * @author Mickael Gaillard <mick.gaillard@gmail.com>
 */
 public abstract class MessageSubscriberBase<T extends Message> {
+
+    public static final String TAG_WORLD = "world";
+    public static final String TAG_ZONE = "zone";
+    public static final String TAG_NODE = "node";
+    public static final String SEPARATOR = "/";
+    public static final String STATEDATA = SEPARATOR + "statedata";
+
     private final String topic;
     private final Class<T> messageClass;
     private final String measurement;
@@ -73,10 +82,41 @@ public abstract class MessageSubscriberBase<T extends Message> {
     public abstract DateTime getMessageDate(T message);
     public abstract Map<String, Object> getMessageFields(T message);
 
-    public Map<String, String> getMessageTags(T message) {
+    public Map<String, String> getMessageTags(T message) throws BadMessageException {
         Map<String, String> result = new HashMap<>();
+        StringBuilder zone  = new StringBuilder();
+        String world = "";
+        String node  = "";
 
-        result.put("node", this.getTopic());
+        // /home/simulator/light1/statedata
+        String topic = this.getTopic().replace(STATEDATA, "");
+
+        String[] splitTopic = topic.substring(1, topic.length()).split(SEPARATOR);
+        int splitTopicCount = splitTopic.length -1;
+
+        for (int i = splitTopicCount; i >= 0; i--) {
+            if (i == splitTopicCount) {
+                node = splitTopic[i];
+            }
+            if (i == 0 && splitTopicCount > 0) {
+                world = splitTopic[i];
+            }
+            if (i > 0 && i < splitTopicCount) {
+                if (zone.length() > 0) {
+                    zone.insert(0, splitTopic[i] + SEPARATOR);
+                } else {
+                    zone.insert(0, splitTopic[i]);
+                }
+            }
+        }
+
+        if (Strings.isNullOrEmpty(node)) {
+            throw new BadMessageException();
+        }
+
+        result.put(TAG_WORLD, world);
+        result.put(TAG_ZONE,  zone.toString());
+        result.put(TAG_NODE,  node);
 
         return result;
     }

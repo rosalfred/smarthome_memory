@@ -15,11 +15,14 @@ import org.joda.time.DateTime;
 import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
 
 import smarthome_heater_msgs.msg.SensorTemperatureStateData;
+import smarthome_heater_msgs.msg.HeatingStateData;
 
 /**
 *
 * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
 * @author Mickael Gaillard <mick.gaillard@gmail.com>
+*
+* TODO switch to
 */
 public class HeaterSubscriber extends MessageSubscriberBase<SensorTemperatureStateData> {
 
@@ -44,6 +47,26 @@ public class HeaterSubscriber extends MessageSubscriberBase<SensorTemperatureSta
 
         result.put("object.temperature", message.getTemperatureObject().getTemperature());
         result.put("object.variance", message.getTemperatureObject().getVariance());
+
+        return result;
+    }
+
+//    @Override
+    public Map<String, Object> getMessageFields(HeatingStateData message) {
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("pid.p", message.getProportional());
+        result.put("pid.i", message.getIntegral());
+        result.put("pid.d", message.getDerivative());
+
+        result.put("ambiant.temperature", message.getTemperatureReal().getTemperature());
+        result.put("ambiant.variance", message.getTemperatureReal().getVariance());
+
+        result.put("object.temperature", message.getTemperatureReal().getTemperature());
+        result.put("object.variance", message.getTemperatureReal().getVariance());
+
+        result.put("target.temperature", message.getTemperatureGoal().getTemperature());
+        result.put("target.variance", message.getTemperatureGoal().getVariance());
 
         return result;
     }
