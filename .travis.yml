@@ -15,6 +15,7 @@ cache:
     - $ANDROID_HOME
 
 before_install:
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 - docker pull theosakamg7/ros2java:latest
 - echo "INSTALL/BUILD ROS2 AMENT..."
 - cd $HOME_BUILD && mkdir -p ament_ws/src && cd $HOME_BUILD/ament_ws
@@ -26,6 +27,7 @@ before_install:
 - docker run -u "$UID" -it --rm -v `pwd`:`pwd` -w `pwd` theosakamg7/ros2java:latest sh -c "/usr/bin/wget https://gist.githubusercontent.com/Theosakamg/d9259bbc708c5145255fbdeb25e65e19/raw/ros2_java_desktop.repos"
 - docker run -u "$UID" -it --rm -v `pwd`:`pwd` -w `pwd` theosakamg7/ros2java:latest sh -c "/usr/bin/vcs import src < ros2_java_desktop.repos"
 - cd $ROS2WS/src/ros2/rosidl_typesupport && patch -p1 < ../../ros2_java/ros2_java/rosidl_ros2_java.diff
+- cd $ROS2WS/src/eProsima/Fast-RTPS && git submodule init && git submodule update
 - echo "INSTALL ALFRED WS..."
 - cd $ROS2WS
 - docker run -u "$UID" -it --rm -v `pwd`:`pwd` -w `pwd` theosakamg7/ros2java:latest sh -c "/usr/bin/wget https://gist.githubusercontent.com/Theosakamg/51f3e8670784db13d9190c58e3e57eb2/raw/ros2_alfred.repos"
@@ -33,7 +35,7 @@ before_install:
 - rm -rf $ROS2WS/src/rosalfred/smarthome_memory && ln -s $HOME_BUILD/rosalfred/smarthome_memory $ROS2WS/src/rosalfred/smarthome_memory
 - echo "BUILD ROS2 WS..."
 - cd $HOME_BUILD && ls -lFa ./ && find . -maxdepth 3 -type d -not \( -path "./.git" -prune \)
-- docker run -u "$UID" -it --rm -v `pwd`:`pwd` -w `pwd` theosakamg7/ros2java:latest sh -c ". ament_ws/install_isolated/local_setup.sh && cd $ROS2WS && ament build --symlink-install --isolated"
+- docker run -u "$UID" -it --rm -v `pwd`:`pwd` -w `pwd` theosakamg7/ros2java:latest sh -c ". ament_ws/install_isolated/local_setup.sh && cd $ROS2WS && ament build --symlink-install --isolated --skip-packages $PKG_EXCLUDE"
 
 script:
 - cd $HOME_BUILD && docker run -u "$UID" -it --rm -v `pwd`:`pwd` -w `pwd` theosakamg7/ros2java:latest sh -c ". ament_ws/install_isolated/local_setup.sh && cd $ROS2WS && ament test --isolated --only smarthome_memory"
