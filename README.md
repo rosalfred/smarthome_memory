@@ -8,6 +8,7 @@ For :
 Test Query :
 
 SHOW MEASUREMENTS;
+SELECT * FROM node ORDER BY time DESC LIMIT 3;
 SELECT * FROM node_comm ORDER BY time DESC LIMIT 3;
 SELECT * FROM node_electrical ORDER BY time DESC LIMIT 3;
 SELECT * FROM node_gaz ORDER BY time DESC LIMIT 3;
