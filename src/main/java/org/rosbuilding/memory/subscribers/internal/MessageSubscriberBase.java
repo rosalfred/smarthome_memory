@@ -14,6 +14,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.ros2.rcljava.internal.message.Message;
 import org.rosbuilding.common.StateDataComparator;
+import org.rosbuilding.memory.watcher.DetectNode;
 
 import com.google.common.base.Strings;
 
@@ -24,9 +25,6 @@ import com.google.common.base.Strings;
 */
 public abstract class MessageSubscriberBase<T extends Message> {
 
-    public static final String TAG_WORLD = "world";
-    public static final String TAG_ZONE = "zone";
-    public static final String TAG_NODE = "node";
     public static final String SEPARATOR = "/";
     public static final String STATEDATA = SEPARATOR + "statedata";
 
@@ -49,6 +47,7 @@ public abstract class MessageSubscriberBase<T extends Message> {
             Class<T> messageClass,
             String measurement,
             StateDataComparator<T> comparator) {
+
         this.topic = topic;
         this.messageClass = messageClass;
         this.measurement = measurement;
@@ -71,7 +70,8 @@ public abstract class MessageSubscriberBase<T extends Message> {
         boolean result = false;
 
         if (this.comparator == null
-                || this.lastMessage == null || !this.comparator.isEquals(this.lastMessage, message)) {
+                || this.lastMessage == null
+                || !this.comparator.isEquals(this.lastMessage, message)) {
             this.lastMessage = message;
             result = true;
         }
@@ -84,39 +84,18 @@ public abstract class MessageSubscriberBase<T extends Message> {
 
     public Map<String, String> getMessageTags(T message) throws BadMessageException {
         Map<String, String> result = new HashMap<>();
-        StringBuilder zone  = new StringBuilder();
-        String world = "";
-        String node  = "";
+        DetectNode node = new DetectNode();
 
-        // /home/simulator/light1/statedata
         String topic = this.getTopic().replace(STATEDATA, "");
 
-        String[] splitTopic = topic.substring(1, topic.length()).split(SEPARATOR);
-        int splitTopicCount = splitTopic.length -1;
+        node.parse(topic);
+        node.findSGBDR();
 
-        for (int i = splitTopicCount; i >= 0; i--) {
-            if (i == splitTopicCount) {
-                node = splitTopic[i];
-            }
-            if (i == 0 && splitTopicCount > 0) {
-                world = splitTopic[i];
-            }
-            if (i > 0 && i < splitTopicCount) {
-                if (zone.length() > 0) {
-                    zone.insert(0, splitTopic[i] + SEPARATOR);
-                } else {
-                    zone.insert(0, splitTopic[i]);
-                }
-            }
-        }
-
-        if (Strings.isNullOrEmpty(node)) {
+        if (Strings.isNullOrEmpty(node.getName())) {
             throw new BadMessageException();
         }
 
-        result.put(TAG_WORLD, world);
-        result.put(TAG_ZONE,  zone.toString());
-        result.put(TAG_NODE,  node);
+        result.putAll(node.getMessageTags());
 
         return result;
     }

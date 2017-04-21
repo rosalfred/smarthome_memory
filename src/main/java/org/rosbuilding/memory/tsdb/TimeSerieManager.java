@@ -8,6 +8,7 @@
  */
 package org.rosbuilding.memory.tsdb;
 
+import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
@@ -27,5 +28,7 @@ public interface TimeSerieManager {
      * @param fields
      */
     void write(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields);
+
+    void writeNodes(DateTime date, String measurement, List<String> cachedNodes);
 
 }

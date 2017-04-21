@@ -14,6 +14,7 @@ import org.ros2.rcljava.internal.message.Message;
 
 import org.rosbuilding.memory.subscribers.internal.BadMessageException;
 import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
+import org.rosbuilding.memory.watcher.DetectNode;
 
 public class TestSubscribers {
 
@@ -38,9 +39,9 @@ public class TestSubscribers {
         MessageSubscriberBase<Message> sub = new MockSubscriber("/node");
         Map<String, String> map = sub.getMessageTags(null);
 
-        assertEquals(map.get(MessageSubscriberBase.TAG_WORLD), "");
-        assertEquals(map.get(MessageSubscriberBase.TAG_ZONE), "");
-        assertEquals(map.get(MessageSubscriberBase.TAG_NODE), "node");
+        assertNull(map.get(DetectNode.TAG_WORLD));
+        assertNull(map.get(DetectNode.TAG_ZONE));
+        assertEquals(map.get(DetectNode.TAG_NODE), "node_0");
     }
 
     @Test
@@ -48,9 +49,9 @@ public class TestSubscribers {
         MessageSubscriberBase<Message> sub = new MockSubscriber("/world/node");
         Map<String, String> map = sub.getMessageTags(null);
 
-        assertEquals(map.get(MessageSubscriberBase.TAG_WORLD), "world");
-        assertEquals(map.get(MessageSubscriberBase.TAG_ZONE), "");
-        assertEquals(map.get(MessageSubscriberBase.TAG_NODE), "node");
+        assertEquals(map.get(DetectNode.TAG_WORLD), "world_0");
+        assertNull(map.get(DetectNode.TAG_ZONE));
+        assertEquals(map.get(DetectNode.TAG_NODE), "node_0");
     }
 
     @Test
@@ -58,9 +59,9 @@ public class TestSubscribers {
         MessageSubscriberBase<Message> sub = new MockSubscriber("/world/zone/node");
         Map<String, String> map = sub.getMessageTags(null);
 
-        assertEquals(map.get(MessageSubscriberBase.TAG_WORLD), "world");
-        assertEquals(map.get(MessageSubscriberBase.TAG_ZONE), "zone");
-        assertEquals(map.get(MessageSubscriberBase.TAG_NODE), "node");
+        assertEquals(map.get(DetectNode.TAG_WORLD), "world_0");
+        assertEquals(map.get(DetectNode.TAG_ZONE), "zone_0");
+        assertEquals(map.get(DetectNode.TAG_NODE), "node_0");
     }
 
     @Test
@@ -68,9 +69,9 @@ public class TestSubscribers {
         MessageSubscriberBase<Message> sub = new MockSubscriber("/world/level/zone/node");
         Map<String, String> map = sub.getMessageTags(null);
 
-        assertEquals(map.get(MessageSubscriberBase.TAG_WORLD), "world");
-        assertEquals(map.get(MessageSubscriberBase.TAG_ZONE), "level/zone");
-        assertEquals(map.get(MessageSubscriberBase.TAG_NODE), "node");
+        assertEquals(map.get(DetectNode.TAG_WORLD), "world_0");
+        assertEquals(map.get(DetectNode.TAG_ZONE), "zone_0");
+        assertEquals(map.get(DetectNode.TAG_NODE), "node_0");
     }
 
 }

@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.joda.time.DateTime;
-
 import org.ros2.rcljava.internal.message.Message;
 import org.ros2.rcljava.node.Node;
 import org.ros2.rcljava.node.topic.SubscriptionCallback;
@@ -202,6 +201,11 @@ public class CachedManager {
 
         this.cachedNodes.clear();
         this.cachedNodes.addAll(detectedNodes);
+
+        if (!this.cachedNodes.isEmpty()) {
+            DateTime date = DateTime.now();
+            this.influx.writeNodes(date, "node", this.cachedNodes);
+        }
     }
 
 }
