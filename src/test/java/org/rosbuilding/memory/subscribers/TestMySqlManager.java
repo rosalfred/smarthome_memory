@@ -7,6 +7,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.rosbuilding.memory.sgbd.MySqlManager;
 import org.rosbuilding.memory.watcher.DetectNode;
@@ -30,6 +31,7 @@ public class TestMySqlManager {
     }
 
     @Test
+    @Ignore
     public final void test() {
         MySqlManager manager = new MySqlManager();
         DetectNode node = new DetectNode();
