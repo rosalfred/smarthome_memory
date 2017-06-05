@@ -52,13 +52,13 @@ public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
     }
 
     @Override
-    public void onShutdown(Node node) {
+    public void onShutdown() {
         this.nodeWatcher.stop();
         this.topicWatcher.stop();
 
         this.cachedManager.clear();
 
-        super.onShutdown(node);
+        super.onShutdown();
     }
 
     @Override
@@ -68,15 +68,18 @@ public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
 
     public static void main(String[] args) throws InterruptedException {
         RCLJava.rclJavaInit();
-        Node node = RCLJava.createNode(NAME);
 
-        MemoryNode memory = new MemoryNode();
+        final MemoryNode memory = new MemoryNode();
+        final Node node = RCLJava.createNode(NAME);
+
         memory.onStart(node);
+        memory.onStarted();
 
         RCLJava.spin(node);
 
-        memory.onShutdown(node);
-        node.dispose();
+        memory.onShutdown();
+        memory.onShutdowned();
+
         RCLJava.shutdown();
     }
 }
