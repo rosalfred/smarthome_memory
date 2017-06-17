@@ -56,7 +56,7 @@ public class CachedManager {
     };
 
     private final List<String> cachedNodes = new ArrayList<String>();
-    private final Map<String, String> cachedTopics = new HashMap<String, String>();
+    private final Map<String, List<String>> cachedTopics = new HashMap<String, List<String>>();
 
     /** List of Topics and types. */
     private final Map<String, MessageSubscriberBase<? extends Message>> stateDataSubscribers = new HashMap<>();
@@ -74,14 +74,14 @@ public class CachedManager {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public boolean add(String topic, String messageType) {
+    public boolean add(String topic, List<String> messageTypes) {
         boolean result = false;
         MessageSubscriberBase<? extends Message> stateDataSubscriber = null;
 
-        this.cachedTopics.put(topic, messageType);
+        this.cachedTopics.put(topic, messageTypes);
 
         for (Entry<Class<? extends Message>, Class<?>> subscriber : SUBSCRIBER_MAPPING.entrySet()) {
-            if (isMessageType(messageType, subscriber.getKey())) {
+            if (CachedManager.isMessageType(messageTypes, subscriber.getKey())) {
                 try {
                     Object obj = subscriber.getValue().getConstructor(String.class).newInstance(topic);
                     if (obj instanceof MessageSubscriberBase<?>) {
@@ -125,8 +125,8 @@ public class CachedManager {
     /**
      * @return the topicCaches
      */
-    public synchronized final Map<String, String> getTopicCaches() {
-        return new HashMap<String, String>(cachedTopics);
+    public synchronized final Map<String, List<String>> getTopicCaches() {
+        return new HashMap<String, List<String>>(cachedTopics);
     }
 
     public synchronized final Node getNode() {
@@ -187,9 +187,19 @@ public class CachedManager {
         this.subscribers.put(stateDataSubscriber.getTopic(), subscription);
     }
 
-    private static boolean isMessageType(String type, Class<? extends Message> messageClass) {
-        return type != null && messageClass != null
-                && type.equals(messageClass.getName().replace(".msg.", "/"));
+    private static boolean isMessageType(List<String> types, Class<? extends Message> messageClass) {
+        boolean result = false;
+
+        if (types != null && messageClass != null) {
+            for (String type : types) {
+                if (type.equals(messageClass.getName().replace(".msg.", "/"))) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
     private void insert(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields) {

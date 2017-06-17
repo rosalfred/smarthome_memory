@@ -9,6 +9,7 @@
 package org.rosbuilding.memory.watcher;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,7 +27,7 @@ import com.google.common.collect.Maps;
 public class TopicWatcher extends BaseWatcher {
 
     /**
-     * Constuctor of TopicWatcher.
+     * Constructor of TopicWatcher.
      * @param cachedManager
      */
     public TopicWatcher(final CachedManager cachedManager) {
@@ -36,20 +37,20 @@ public class TopicWatcher extends BaseWatcher {
     @Override
     protected void check() {
         logger.debug("Detect Topics available...");
-        HashMap<String, String> topicsTypes = this.cachedManager.getNode().getTopicNamesAndTypes();
+        HashMap<String, List<String>> topicsTypes = this.cachedManager.getNode().getTopicNamesAndTypes();
 
-        MapDifference<String, String> diff = Maps.difference(this.cachedManager.getTopicCaches(), topicsTypes);
-        Map<String, String> removed = diff.entriesOnlyOnLeft();
-        Map<String, String> added   = diff.entriesOnlyOnRight();
+        MapDifference<String, List<String>> diff = Maps.difference(this.cachedManager.getTopicCaches(), topicsTypes);
+        Map<String, List<String>> removed = diff.entriesOnlyOnLeft();
+        Map<String, List<String>> added   = diff.entriesOnlyOnRight();
 
         // TODO Remove from detected node, not only from topic (because is subscribed)
         // Remove removed topic.
-        for (Entry<String, String> topic : removed.entrySet()) {
+        for (Entry<String, List<String>> topic : removed.entrySet()) {
             this.cachedManager.remove(topic.getKey());
         }
 
         // Add added topic.
-        for (Entry<String, String> topic : added.entrySet()) {
+        for (Entry<String, List<String>> topic : added.entrySet()) {
             this.cachedManager.add(topic.getKey(), topic.getValue());
         }
     }
