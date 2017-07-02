@@ -18,7 +18,7 @@ ament {generateEclipse=true}
 dependencies {
     compile 'joda-time:joda-time:2.+'
     compile 'com.google.guava:guava:19+'
-    compile 'com.google.code.gson:gson:2.+'
+    compile 'com.google.code.gson:gson:2+'
 
     compile 'org.influxdb:influxdb-java:2.+'
     compile 'mysql:mysql-connector-java:5+'
