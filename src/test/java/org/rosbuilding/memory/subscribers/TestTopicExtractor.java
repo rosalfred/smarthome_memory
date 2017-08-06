@@ -2,18 +2,13 @@ package org.rosbuilding.memory.subscribers;
 
 import static org.junit.Assert.*;
 
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.ros2.rcljava.internal.message.Message;
-
 import org.rosbuilding.memory.subscribers.internal.BadMessageException;
-import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
 import org.rosbuilding.memory.watcher.DetectNode;
 
 public class TestTopicExtractor {
