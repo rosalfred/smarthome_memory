@@ -3,7 +3,7 @@
 
 <package format="3">
   <name>smarthome_memory</name>
-  <version>0.1.9</version>
+  <version>2.0.0</version>
   <description>This package is for interfacing XBMC (by Rest API) to ROS. This package is part of Alfred Assistant stack.</description>
 
   <maintainer email="mick.gaillard@gmail.com">Mickael Gaillard</maintainer>
