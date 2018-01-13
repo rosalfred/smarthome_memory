@@ -6,7 +6,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package org.rosbuilding.memory.subscribers.internal;
+
+package org.rosbuilding.memory.concept.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.ros2.rcljava.internal.message.Message;
 import org.rosbuilding.common.StateDataComparator;
-import org.rosbuilding.memory.watcher.DetectNode;
+import org.rosbuilding.memory.tsdb.DetectNode;
 
 import com.google.common.base.Strings;
 
@@ -23,7 +24,7 @@ import com.google.common.base.Strings;
 * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
 * @author Mickael Gaillard <mick.gaillard@gmail.com>
 */
-public abstract class MessageSubscriberBase<T extends Message> {
+public abstract class MessageInfoBase<T extends Message> {
 
     public static final String SEPARATOR = "/";
     public static final String STATEDATA = SEPARATOR + "statedata";
@@ -35,14 +36,14 @@ public abstract class MessageSubscriberBase<T extends Message> {
 
     private T lastMessage;
 
-    protected MessageSubscriberBase(
+    protected MessageInfoBase(
             String topic,
             Class<T> messageClass,
             String measurement) {
         this(topic, messageClass, measurement, null);
     }
 
-    protected MessageSubscriberBase(
+    protected MessageInfoBase(
             String topic,
             Class<T> messageClass,
             String measurement,
@@ -66,6 +67,11 @@ public abstract class MessageSubscriberBase<T extends Message> {
         return this.measurement;
     }
 
+    public DateTime getMessageDate() {
+        //TODO return new DateTime(message.getHeader().getStamp().getSec());
+        return DateTime.now();
+    }
+
     public final boolean mustInsert(T message) {
         boolean result = false;
 
@@ -79,20 +85,19 @@ public abstract class MessageSubscriberBase<T extends Message> {
         return result;
     }
 
-    public abstract DateTime getMessageDate(T message);
     public abstract Map<String, Object> getMessageFields(T message);
 
-    public Map<String, String> getMessageTags(T message) throws BadMessageException {
+    public Map<String, String> getMessageTags(T message) throws BadInfoException {
         Map<String, String> result = new HashMap<>();
         DetectNode node = new DetectNode();
 
         String topic = this.getTopic().replace(STATEDATA, "");
 
         node.parse(topic);
-        node.findSGBDR();
+        //node.findSGBDR();
 
         if (Strings.isNullOrEmpty(node.getName())) {
-            throw new BadMessageException();
+            throw new BadInfoException();
         }
 
         result.putAll(node.getMessageTags());

@@ -6,34 +6,28 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package org.rosbuilding.memory.subscribers;
+
+package org.rosbuilding.memory.concept;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
+import org.rosbuilding.memory.concept.internal.MessageInfoBase;
 
 import smarthome_heater_msgs.msg.SensorTemperatureStateData;
 import smarthome_heater_msgs.msg.HeatingStateData;
 
 /**
-*
-* @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
-* @author Mickael Gaillard <mick.gaillard@gmail.com>
-*
-* TODO switch to
-*/
-public class HeaterSubscriber extends MessageSubscriberBase<SensorTemperatureStateData> {
+ *
+ * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
+ *
+ * TODO switch to
+ */
+public class HeaterInfo extends MessageInfoBase<SensorTemperatureStateData> {
 
-    public HeaterSubscriber(String topic) {
+    public HeaterInfo(String topic) {
         super(topic, SensorTemperatureStateData.class, "node_thermal");
-    }
-
-    @Override
-    public DateTime getMessageDate(SensorTemperatureStateData message) {
-        //return new DateTime(message.getHeader().getStamp().getSec());
-        return DateTime.now();
     }
 
     @Override

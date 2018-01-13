@@ -11,10 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.ros2.rcljava.internal.message.Message;
-
-import org.rosbuilding.memory.subscribers.internal.BadMessageException;
-import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
-import org.rosbuilding.memory.watcher.DetectNode;
+import org.rosbuilding.memory.concept.internal.BadInfoException;
+import org.rosbuilding.memory.concept.internal.MessageInfoBase;
+import org.rosbuilding.memory.tsdb.DetectNode;
 
 public class TestSubscribers {
 
@@ -35,8 +34,8 @@ public class TestSubscribers {
     }
 
     @Test
-    public final void testNodeOnly() throws BadMessageException {
-        MessageSubscriberBase<Message> sub = new MockSubscriber("/node");
+    public final void testNodeOnly() throws BadInfoException {
+        MessageInfoBase<Message> sub = new MockSubscriber("/node");
         Map<String, String> map = sub.getMessageTags(null);
 
         assertNull(map.get(DetectNode.TAG_WORLD));
@@ -45,8 +44,8 @@ public class TestSubscribers {
     }
 
     @Test
-    public final void testNodeWorld() throws BadMessageException {
-        MessageSubscriberBase<Message> sub = new MockSubscriber("/world/node");
+    public final void testNodeWorld() throws BadInfoException {
+        MessageInfoBase<Message> sub = new MockSubscriber("/world/node");
         Map<String, String> map = sub.getMessageTags(null);
 
         assertEquals(map.get(DetectNode.TAG_WORLD), "world_0");
@@ -55,8 +54,8 @@ public class TestSubscribers {
     }
 
     @Test
-    public final void testNodeOneZoneWorld() throws BadMessageException {
-        MessageSubscriberBase<Message> sub = new MockSubscriber("/world/zone/node");
+    public final void testNodeOneZoneWorld() throws BadInfoException {
+        MessageInfoBase<Message> sub = new MockSubscriber("/world/zone/node");
         Map<String, String> map = sub.getMessageTags(null);
 
         assertEquals(map.get(DetectNode.TAG_WORLD), "world_0");
@@ -65,8 +64,8 @@ public class TestSubscribers {
     }
 
     @Test
-    public final void testNodeMultiZoneWorld() throws BadMessageException {
-        MessageSubscriberBase<Message> sub = new MockSubscriber("/world/level/zone/node");
+    public final void testNodeMultiZoneWorld() throws BadInfoException {
+        MessageInfoBase<Message> sub = new MockSubscriber("/world/level/zone/node");
         Map<String, String> map = sub.getMessageTags(null);
 
         assertEquals(map.get(DetectNode.TAG_WORLD), "world_0");

@@ -6,16 +6,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 package org.rosbuilding.memory;
 
+import org.apache.log4j.BasicConfigurator;
 import org.ros2.rcljava.RCLJava;
 import org.ros2.rcljava.node.Node;
 
 import org.rosbuilding.common.BaseSimpleNode;
-import org.rosbuilding.memory.tsdb.InfluxManager;
-import org.rosbuilding.memory.tsdb.TimeSerieManager;
-import org.rosbuilding.memory.watcher.NodeWatcher;
-import org.rosbuilding.memory.watcher.TopicWatcher;
+
+import org.rosbuilding.memory.manager.MemoryManager;
 
 /**
  * Memory ROS Node.
@@ -25,38 +25,21 @@ import org.rosbuilding.memory.watcher.TopicWatcher;
  */
 public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
 
-    public static final String NAME = "/memory";
+    public static final String NAME = "memory";
 
-    /** Cached manager. */
-    private CachedManager cachedManager;
-
-    /** Watch lifecycle Topics */
-    private TopicWatcher topicWatcher;
-
-    /** Watch lifecycle Nodes */
-    private NodeWatcher nodeWatcher;
+    private MemoryManager memory;
 
     @Override
     public void onStart(Node connectedNode) {
         super.onStart(connectedNode);
 
-        TimeSerieManager timeSerieManager = new InfluxManager(this, this.configuration);
-        this.cachedManager = new CachedManager(this.getConnectedNode(), timeSerieManager);
-
-        // Watcher of Topics. Detecte if new or destroy topics.
-        this.topicWatcher = new TopicWatcher(this.cachedManager);
-        this.topicWatcher.start();
-
-        this.nodeWatcher = new NodeWatcher(this.cachedManager);
-        this.nodeWatcher.start();
+        this.memory = new MemoryManager(this.configuration, connectedNode);
+        this.memory.start();
     }
 
     @Override
     public void onShutdown() {
-        this.nodeWatcher.stop();
-        this.topicWatcher.stop();
-
-        this.cachedManager.clear();
+        this.memory.stop();
 
         super.onShutdown();
     }
@@ -67,6 +50,8 @@ public class MemoryNode extends BaseSimpleNode<MemoryConfig> {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        BasicConfigurator.resetConfiguration();
+        BasicConfigurator.configure();
         RCLJava.rclJavaInit();
 
         final MemoryNode memory = new MemoryNode();

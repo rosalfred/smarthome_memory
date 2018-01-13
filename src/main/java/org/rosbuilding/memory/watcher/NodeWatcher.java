@@ -6,11 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 package org.rosbuilding.memory.watcher;
 
-import java.util.List;
-
-import org.rosbuilding.memory.CachedManager;
+import org.rosbuilding.memory.manager.MemoryManager;
 
 /**
  * Nodes watcher.<p>
@@ -18,28 +17,26 @@ import org.rosbuilding.memory.CachedManager;
  *
  * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
-public class NodeWatcher extends BaseWatcher {
+public class NodeWatcher extends ThreadWatcherBase {
 
     /**
      * Constuctor of NodeWatcher.
      * @param cachedManager
      */
-    public NodeWatcher(CachedManager cachedManager) {
-        super(cachedManager);
+    public NodeWatcher(final MemoryManager memory) {
+        super(memory);
     }
 
     @Override
     protected void check() {
-        logger.debug("Detect Nodes available...");
-        List<String> detectedNodes = this.cachedManager.getNode().getNodeNames();
+        this.logger.debug("Detect Nodes available...");
 
-        this.cachedManager.update(detectedNodes);
+        this.memory.refreshNodes();
     }
 
     @Override
     protected String getWatcherName() {
         return "Watcher Node";
     }
-
 
 }

@@ -9,7 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.rosbuilding.memory.sgbd.MySqlManager;
-import org.rosbuilding.memory.watcher.DetectNode;
+import org.rosbuilding.memory.tsdb.DetectNode;
 
 public class TestMySqlManager {
 

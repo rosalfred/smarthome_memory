@@ -6,6 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 package org.rosbuilding.memory.tsdb;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import org.joda.time.DateTime;
  *
  * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
-public interface TimeSerieManager {
+public interface TimeSerieRepository {
 
     /**
      * Write Data to Time Serie Database.
@@ -27,7 +28,7 @@ public interface TimeSerieManager {
      * @param tags
      * @param fields
      */
-    void write(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields);
+    void writeTopic(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields);
 
     void writeNodes(DateTime date, String measurement, List<String> cachedNodes);
 

@@ -6,30 +6,24 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package org.rosbuilding.memory.subscribers;
+
+package org.rosbuilding.memory.concept;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
+import org.rosbuilding.memory.concept.internal.MessageInfoBase;
 
 import smarthome_comm_msgs.msg.Command;
 
 /**
-*
-* @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
-* @author Mickael Gaillard <mick.gaillard@gmail.com>
-*/
-public class CommSubscriber extends MessageSubscriberBase<Command> {
+ * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
+ */
+public class CommInfo extends MessageInfoBase<Command> {
 
-    public CommSubscriber(String topic) {
+    public CommInfo(String topic) {
         super(topic, Command.class, "node_comm");
-    }
-
-    @Override
-    public DateTime getMessageDate(Command message) {
-        return DateTime.now();
     }
 
     @Override

@@ -8,6 +8,8 @@
  */
 
 /**
- *
- */
-package org.rosbuilding.memory.watcher;
+*
+* @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
+* @author Mickael Gaillard <mick.gaillard@gmail.com>
+*/
+package org.rosbuilding.memory.concept;

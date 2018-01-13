@@ -6,31 +6,25 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package org.rosbuilding.memory.subscribers;
+
+package org.rosbuilding.memory.concept;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.rosbuilding.common.media.MediaStateDataComparator;
-import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
+import org.rosbuilding.memory.concept.internal.MessageInfoBase;
 
 import smarthome_media_msgs.msg.StateData;
 
 /**
-*
-* @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
-* @author Mickael Gaillard <mick.gaillard@gmail.com>
-*/
-public class MediaSubscriber extends MessageSubscriberBase<StateData> {
-    public MediaSubscriber(String topic) {
+ *
+ * @author Erwan Le Huitouze <erwan.lehuitouze@gmail.com>
+ * @author Mickael Gaillard <mick.gaillard@gmail.com>
+ */
+public class MediaInfo extends MessageInfoBase<StateData> {
+    public MediaInfo(String topic) {
         super(topic, StateData.class, "node_media", new MediaStateDataComparator());
-    }
-
-    @Override
-    public DateTime getMessageDate(StateData message) {
-        //return new DateTime(message.getHeader().getStamp().getSec());
-        return DateTime.now();
     }
 
     @Override

@@ -6,9 +6,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 package org.rosbuilding.memory;
 
 import org.ros2.rcljava.node.Node;
+
 import org.rosbuilding.common.NodeDriverConnectedConfig;
 
 /**
@@ -34,7 +36,7 @@ public class MemoryConfig extends NodeDriverConnectedConfig {
                 "admin",
                 "admin");
 
-        this.name = "smarthome_memory";
+        this.name = "alfred_log";
     }
 
     /**

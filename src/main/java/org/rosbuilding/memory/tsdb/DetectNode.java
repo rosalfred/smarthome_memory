@@ -1,9 +1,18 @@
-package org.rosbuilding.memory.watcher;
+/*
+ * This file is part of the Alfred package.
+ *
+ * (c) Mickael Gaillard <mick.gaillard@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+package org.rosbuilding.memory.tsdb;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.rosbuilding.memory.sgbd.MySqlManager;
+//import org.rosbuilding.memory.sgbd.MySqlManager;
 
 public class DetectNode {
     public static final String FLD_TOPIC = "topic";
@@ -27,11 +36,11 @@ public class DetectNode {
     private String name  = "";
     private StringBuilder zone  = new StringBuilder();
 
-    public void findSGBDR() {
-        // Query node from SGBD
-        MySqlManager manager = new MySqlManager();
-        manager.getId(this);
-    }
+//    public void findSGBDR() {
+//        // Query node from SGBD
+//        MySqlManager manager = new MySqlManager();
+//        manager.getId(this);
+//    }
 
     public void parse(String topic) {
         this.topic = topic;

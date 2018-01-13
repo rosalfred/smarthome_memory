@@ -1,3 +1,12 @@
+/*
+ * This file is part of the Alfred package.
+ *
+ * (c) Mickael Gaillard <mick.gaillard@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 package org.rosbuilding.memory.sgbd;
 
 import java.sql.Connection;
@@ -6,16 +15,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.rosbuilding.memory.watcher.DetectNode;
+import org.rosbuilding.memory.tsdb.DetectNode;
 
 public class MySqlManager {
-    static final String DB_NAME = "alfred_web";
+    static final String DB_NAME = "alfred_www";
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost/" + DB_NAME;
 
 //  Database credentials
-    static final String USER = "root";
-    static final String PASS = "";
+    static final String USER = "devel";
+    static final String PASS = "rt2135mg";
 
     static {
         try {

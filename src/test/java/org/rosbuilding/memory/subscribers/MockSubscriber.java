@@ -11,19 +11,13 @@ package org.rosbuilding.memory.subscribers;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.ros2.rcljava.internal.message.Message;
-import org.rosbuilding.memory.subscribers.internal.MessageSubscriberBase;
+import org.rosbuilding.memory.concept.internal.MessageInfoBase;
 
-public class MockSubscriber extends MessageSubscriberBase<Message>{
+public class MockSubscriber extends MessageInfoBase<Message>{
 
     protected MockSubscriber(String topic) {
         super(topic, Message.class, "");
-    }
-
-    @Override
-    public DateTime getMessageDate(Message message) {
-        return DateTime.now();
     }
 
     @Override

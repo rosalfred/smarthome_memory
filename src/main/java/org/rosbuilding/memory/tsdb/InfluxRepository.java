@@ -6,6 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 package org.rosbuilding.memory.tsdb;
 
 import java.util.HashMap;
@@ -24,8 +25,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import org.rosbuilding.memory.MemoryConfig;
-import org.rosbuilding.memory.MemoryNode;
-import org.rosbuilding.memory.watcher.DetectNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +34,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
-public class InfluxManager implements TimeSerieManager {
+public class InfluxRepository implements TimeSerieRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(InfluxManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(InfluxRepository.class);
 
     private static final String POLICY = "autogen";
-
-    private final MemoryNode node;
 
     /**
      * The settings of the application.
@@ -57,8 +55,7 @@ public class InfluxManager implements TimeSerieManager {
      *
      * @param setting The settings of influxDB.
      */
-    public InfluxManager(MemoryNode node, MemoryConfig config) {
-        this.node = node;
+    public InfluxRepository(MemoryConfig config) {
         this.config = config;
 
         logger.debug("Connection to InfluxDb...");
@@ -82,7 +79,7 @@ public class InfluxManager implements TimeSerieManager {
      * @see org.rosbuilding.memory.database.internal.TimeSerieDB#write(org.joda.time.DateTime, java.lang.String, java.util.Map, java.util.Map)
      */
     @Override
-    public void write(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields) {
+    public void writeTopic(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields) {
         logger.debug("Write data on InfluxDb...");
         long time = date.withZone(DateTimeZone.UTC).getMillis();
 
@@ -94,12 +91,12 @@ public class InfluxManager implements TimeSerieManager {
             Point point = builder.build();
             this.influxDB.write(this.config.getName(), POLICY, point);
         } catch (Exception e) {
-            this.node.logD(e.getMessage());
+            logger.debug(e.getMessage());
         }
     }
 
     @Override
-    public void writeNodes(DateTime date, String measurement, List<String> cachedNodes) {
+    public void writeNodes(DateTime date, String measurement, List<String> nodes) {
         logger.debug("Write data on InfluxDb...");
         long time = date.withZone(DateTimeZone.UTC).getMillis();
 
@@ -110,10 +107,10 @@ public class InfluxManager implements TimeSerieManager {
                 .build();
 
         try {
-            for (String cachedNode : cachedNodes) {
+            for (String node : nodes) {
                 DetectNode detectNode = new DetectNode();
-                detectNode.parse(cachedNode);
-                detectNode.findSGBDR();
+                detectNode.parse(node);
+                //detectNode.findSGBDR();
                 Map<String, Object> fields = new HashMap<String, Object>();
                 fields.put("value", 0);
 
@@ -129,7 +126,7 @@ public class InfluxManager implements TimeSerieManager {
                 this.influxDB.write(batchPoints);
             }
         } catch (Exception e) {
-            this.node.logD(e.getMessage());
+            logger.debug(e.getMessage());
         }
     }
 }

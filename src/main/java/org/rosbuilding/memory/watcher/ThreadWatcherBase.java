@@ -6,9 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 package org.rosbuilding.memory.watcher;
 
-import org.rosbuilding.memory.CachedManager;
+import org.rosbuilding.memory.manager.MemoryManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,24 +19,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mickael Gaillard <mick.gaillard@gmail.com>
  */
-public abstract class BaseWatcher implements Runnable {
+public abstract class ThreadWatcherBase implements Runnable {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    /** Cached Manager. */
-    protected final CachedManager cachedManager;
+    protected final MemoryManager memory;
 
     // Thread component.
-    protected volatile Thread blinker;
-    protected boolean threadSuspended;
+    private volatile Thread blinker;
+    private boolean threadSuspended;
 
-    public BaseWatcher(CachedManager cachedManager) {
-        this.cachedManager = cachedManager;
+    public ThreadWatcherBase(final MemoryManager memory) {
+        this.memory = memory;
     }
 
     /** Start the watcher */
     public void start() {
         logger.debug("Start watcher...");
+
         this.blinker = new Thread(this);
         this.blinker.setName(this.getWatcherName());
         this.blinker.start();
@@ -44,6 +45,7 @@ public abstract class BaseWatcher implements Runnable {
     /** Stop the watcher */
     public synchronized void stop() {
         logger.debug("Stop watcher...");
+
         this.blinker = null;
         this.notify();
     }
@@ -53,10 +55,10 @@ public abstract class BaseWatcher implements Runnable {
         Thread thisThread = Thread.currentThread();
 
         while (blinker == thisThread) {
-            BaseWatcher.this.check();
+            ThreadWatcherBase.this.check();
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(30000);
 
                 synchronized(this) {
                     while (threadSuspended && blinker==thisThread)
