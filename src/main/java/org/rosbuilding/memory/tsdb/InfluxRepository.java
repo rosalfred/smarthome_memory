@@ -60,18 +60,20 @@ public class InfluxRepository implements TimeSerieRepository {
 
         logger.debug("Connection to InfluxDb...");
 
-        String cnxString = String.format("http://%s:%d", this.config.getHost(), this.config.getPort());
+        final String cnxString = String.format("http://%s:%d", this.config.getHost(), this.config.getPort());
         this.influxDB = InfluxDBFactory.connect(
                 cnxString,
                 this.config.getUser(),
                 this.config.getPassword());
 
-        this.influxDB.createDatabase(this.config.getName());
+        if (!this.influxDB.databaseExists(this.config.getName())) {
+            this.influxDB.createDatabase(this.config.getName());
+        }
 
-//        this.influxDB.enableBatch(
-//                this.config.getBatchActions(),
-//                this.config.getBatchTimeout(),
-//                TimeUnit.MILLISECONDS);
+        this.influxDB.enableBatch(
+                this.config.getBatchActions(),
+                this.config.getBatchTimeout(),
+                TimeUnit.SECONDS);
         //this.influxDB.setLogLevel(LogLevel.FULL);
     }
 

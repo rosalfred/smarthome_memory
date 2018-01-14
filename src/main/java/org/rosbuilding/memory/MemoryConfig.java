@@ -22,6 +22,8 @@ public class MemoryConfig extends NodeDriverConnectedConfig {
 
     /** Name of TSDB database */
     private String name;
+    private int batchActions = 10;
+    private int batchTimeout = 1;        // In Second
 
     public MemoryConfig(Node connectedNode) {
         super(
@@ -45,5 +47,19 @@ public class MemoryConfig extends NodeDriverConnectedConfig {
      */
     public String getName() {
         return this.name;
+    }
+
+    /**
+    * @return the batchActions
+    */
+    public int getBatchActions() {
+        return batchActions;
+    }
+
+    /**
+    * @return the batchTimeout
+    */
+    public int getBatchTimeout() {
+        return batchTimeout;
     }
 }

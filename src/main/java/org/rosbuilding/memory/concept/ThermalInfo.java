@@ -9,12 +9,13 @@
 
 package org.rosbuilding.memory.concept;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Instant;
 
-import org.rosbuilding.memory.concept.internal.MessageInfoBase;
+import org.influxdb.annotation.Column;
+import org.influxdb.annotation.Measurement;
 
-import sensor_msgs.msg.Temperature;
+import org.rosbuilding.memory.concept.internal.MessageInfoInfluxBase;
+import org.rosbuilding.memory.concept.internal.RosColumn;
 
 /**
 *
@@ -23,20 +24,32 @@ import sensor_msgs.msg.Temperature;
 *
 * TODO switch to
 */
-public class ThermalInfo extends MessageInfoBase<Temperature> {
+public class ThermalInfo extends MessageInfoInfluxBase<sensor_msgs.msg.Temperature> {
+    private static final String MEASUREMENT         = "node_thermal";
+    private static final String TAG_TOPIC           = "sys.topic";
+    private static final String FIELD_TEMPERATURE   = "ambiant.temperature";
+    private static final String FIELD_VARIANCE      = "ambiant.variance";
 
     public ThermalInfo(String topic) {
-        super(topic, Temperature.class, "node_thermal");
+        super(topic, sensor_msgs.msg.Temperature.class, Temperature.class);
     }
 
-    @Override
-    public Map<String, Object> getMessageFields(Temperature message) {
-        Map<String, Object> result = new HashMap<>();
+    @Measurement(name=MEASUREMENT)
+    public static class Temperature {
 
-        result.put("ambiant.temperature", message.getTemperature());
-        result.put("ambiant.variance", message.getVariance());
+        @Column(name = TIME)
+        protected Instant time;
 
-        return result;
+        @Column(name = TAG_TOPIC, tag = true)
+        protected String topic;
+
+        @RosColumn
+        @Column(name = FIELD_TEMPERATURE)
+        protected Double temperature;
+
+        @RosColumn
+        @Column(name = FIELD_VARIANCE)
+        protected Double variance;
     }
 
 }
