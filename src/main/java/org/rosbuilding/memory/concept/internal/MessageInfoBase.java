@@ -16,6 +16,8 @@ import org.joda.time.DateTime;
 import org.ros2.rcljava.internal.message.Message;
 import org.rosbuilding.common.StateDataComparator;
 import org.rosbuilding.memory.tsdb.DetectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
@@ -25,6 +27,8 @@ import com.google.common.base.Strings;
 * @author Mickael Gaillard <mick.gaillard@gmail.com>
 */
 public abstract class MessageInfoBase<T extends Message> {
+
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final String SEPARATOR = "/";
     public static final String STATEDATA = SEPARATOR + "statedata";

@@ -67,6 +67,7 @@ public class InfluxRepository implements TimeSerieRepository {
                 this.config.getPassword());
 
         if (!this.influxDB.databaseExists(this.config.getName())) {
+            logger.debug("Create log database...");
             this.influxDB.createDatabase(this.config.getName());
         }
 
@@ -74,6 +75,7 @@ public class InfluxRepository implements TimeSerieRepository {
                 this.config.getBatchActions(),
                 this.config.getBatchTimeout(),
                 TimeUnit.SECONDS);
+
         //this.influxDB.setLogLevel(LogLevel.FULL);
     }
 
@@ -82,7 +84,7 @@ public class InfluxRepository implements TimeSerieRepository {
      */
     @Override
     public void writeTopic(DateTime date, String measurement, Map<String, String> tags, Map<String, Object> fields) {
-        logger.debug("Write data on InfluxDb...");
+        logger.debug("Write Topic data on InfluxDb...");
         long time = date.withZone(DateTimeZone.UTC).getMillis();
 
         Builder builder = Point.measurement(measurement).time(time, TimeUnit.MILLISECONDS);
@@ -93,13 +95,13 @@ public class InfluxRepository implements TimeSerieRepository {
             Point point = builder.build();
             this.influxDB.write(this.config.getName(), POLICY, point);
         } catch (Exception e) {
-            logger.debug(e.getMessage());
+            logger.debug(e.getMessage(), e);
         }
     }
 
     @Override
     public void writeNodes(DateTime date, String measurement, List<String> nodes) {
-        logger.debug("Write data on InfluxDb...");
+        logger.debug("Write Node data on InfluxDb...");
         long time = date.withZone(DateTimeZone.UTC).getMillis();
 
         BatchPoints batchPoints = BatchPoints
@@ -128,7 +130,7 @@ public class InfluxRepository implements TimeSerieRepository {
                 this.influxDB.write(batchPoints);
             }
         } catch (Exception e) {
-            logger.debug(e.getMessage());
+            logger.debug(e.getMessage(), e);
         }
     }
 }

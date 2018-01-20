@@ -44,6 +44,10 @@ dependencies {
     runtime fileTree(dir: 'libs', include: '*.jar')
 }
 
+configurations.all {
+  exclude group: "org.slf4j", module: "slf4j-jdk14"
+}
+
 ament {
     generateEclipse = true
 

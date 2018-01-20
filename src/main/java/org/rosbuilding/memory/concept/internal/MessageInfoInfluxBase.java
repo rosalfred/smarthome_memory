@@ -49,7 +49,7 @@ public abstract class MessageInfoInfluxBase<T extends Message> extends MessageIn
 
                 this.cacheFields.put(field, new ColumnMethod(column, method));
             } catch (Exception e) {
-                e.printStackTrace();
+                MessageInfoInfluxBase.this.logger.debug(String.format("Field %s not found in message.", field.getName()));
             }
         }
     }

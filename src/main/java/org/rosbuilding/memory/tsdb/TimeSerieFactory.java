@@ -11,9 +11,15 @@ package org.rosbuilding.memory.tsdb;
 
 import org.rosbuilding.memory.MemoryConfig;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class TimeSerieFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(InfluxRepository.class);
+
     public static TimeSerieRepository makeRepository(MemoryConfig config) {
+        logger.debug("Create Influx Repository...");
         return new InfluxRepository(config);
     }
 }
