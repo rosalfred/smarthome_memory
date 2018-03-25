@@ -11,6 +11,7 @@ package org.rosbuilding.memory.manager;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ros2.rcljava.internal.message.Message;
 import org.ros2.rcljava.node.Node;
@@ -104,7 +105,7 @@ public class MemoryManager {
 
     public void refreshTopics() {
         // Get from ROS.
-        HashMap<String, List<String>> topicsTypes = this.rosManager.getAvailabaleTopicNamesAndTypes();
+        Map<String, List<String>> topicsTypes = this.rosManager.getAvailabaleTopicNamesAndTypes();
 
         // Update Short-Time Memory.
         this.shortTimeMemory.update(topicsTypes);

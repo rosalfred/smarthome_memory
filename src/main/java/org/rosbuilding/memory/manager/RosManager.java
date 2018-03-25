@@ -61,8 +61,8 @@ public class RosManager {
         return this.node.getNodeNames();
     }
 
-    public HashMap<String, List<String>> getAvailabaleTopicNamesAndTypes() {
-        HashMap<String, List<String>> result = this.node.getTopicNamesAndTypes();
+    public Map<String, List<String>> getAvailabaleTopicNamesAndTypes() {
+        Map<String, List<String>> result = this.node.getTopicNamesAndTypes();
         List<String> noUses = new ArrayList<String>();
 
         int count = 0;
@@ -122,7 +122,7 @@ public class RosManager {
         boolean result = false;
 
         if (messageInfo != null && !this.stateDataSubscribers.containsKey(messageInfo.getTopic())) {
-            this.node.getLog().debug(String.format("Create subscriber for %s", messageInfo.getTopic()));
+            this.node.getLogger().debug(String.format("Create subscriber for %s", messageInfo.getTopic()));
             this.stateDataSubscribers.put(messageInfo.getTopic(), messageInfo);
             this.createSubscriber(messageInfo);
             result = true;
@@ -152,7 +152,7 @@ public class RosManager {
     }
 
     private <T extends Message> void createSubscriber(final MessageInfoBase<T> stateDataSubscriber) {
-        this.node.getLog().info("init subscriber on : " + stateDataSubscriber.getTopic());
+        this.node.getLogger().info("init subscriber on : " + stateDataSubscriber.getTopic());
 
         Subscription<T> subscription = this.node.<T>createSubscription(
                 stateDataSubscriber.getType(),

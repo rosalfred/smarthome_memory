@@ -88,7 +88,7 @@ public class ShortTimeMemory {
         this.cachedNodes.addAll(detectedNodes);
     }
 
-    public void update(HashMap<String, List<String>> topicsTypes) {
+    public void update(Map<String, List<String>> topicsTypes) {
         MapDifference<String, List<String>> diff = Maps.difference(this.getTopicCaches(), topicsTypes);
         Map<String, List<String>> removed = diff.entriesOnlyOnLeft();
         Map<String, List<String>> added   = diff.entriesOnlyOnRight();
